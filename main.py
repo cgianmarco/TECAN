@@ -11,7 +11,6 @@ def main():
 	theModel = Model()
 
 	theController = Controller(theView, theModel)
-
 	theView.show()
 	sys.exit(app.exec_())
 

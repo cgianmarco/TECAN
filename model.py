@@ -1,10 +1,9 @@
 from openpyxl import load_workbook
 import numpy as np
 
-class Model:
+class Tensor:
 	def __init__(self):
-		self.data = np.zeros((10,8,8))
-		self.storedValues = {}
+		self.data = np.zeros((10,10,10))
 		self.wl_start = 0
 		self.wl_end = 0
 		self.maxDepth = 0
@@ -54,3 +53,109 @@ class Model:
 	def getCurrentWL(self):
 		return self.wl_start + self.currentDepth
 
+
+
+
+class Model(object):
+	def __init__(self):
+		tensor = Tensor()
+		self.tensors = {"Matrix0" : tensor}
+		self.currentTensor = "Matrix0"
+		self.lastIndex = 0
+		self.initialized = False
+
+	def addNewTensor(self, filename):
+		if self.initialized == True:
+			self.lastIndex += 1
+		else:
+			self.initialized = True
+		newKey = "Matrix" + str(self.lastIndex)
+		self.tensors[newKey] = Tensor()
+		self.tensors[newKey].load_matrix(filename)
+		self.currentTensor = newKey
+
+	def removeTensor(self, key):
+		del self.tensors[key]
+
+	@property
+	def data(self):
+		return self.getCurrentTensor().data
+
+	@property
+	def wl_start(self):
+		return self.getCurrentTensor().wl_start
+
+	@property
+	def wl_end(self):
+		return self.getCurrentTensor().wl_end
+
+	@property
+	def maxDepth(self):
+		return self.getCurrentTensor().maxDepth
+
+	@property
+	def currentDepth(self):
+		return self.getCurrentTensor().currentDepth
+
+	@property
+	def width(self):
+		return self.getCurrentTensor().width
+
+	@property
+	def height(self):
+		return self.getCurrentTensor().height
+
+	@data.setter
+	def data(self, value):
+		self.getCurrentTensor().data = value
+
+	@wl_start.setter
+	def wl_start(self, value):
+		self.getCurrentTensor().wl_start = value
+
+	@wl_end.setter
+	def wl_end(self, value):
+		self.getCurrentTensor().wl_end = value
+
+	@maxDepth.setter
+	def maxDepth(self, value):
+		self.getCurrentTensor().maxDepth = value
+
+	@currentDepth.setter
+	def currentDepth(self, value):
+		self.getCurrentTensor().currentDepth = value
+
+	@width.setter
+	def width(self, value):
+		self.getCurrentTensor().width = value
+
+	@height.setter
+	def height(self, value):
+		self.getCurrentTensor().height = value
+
+	# def __getattr__(self, name):
+	# 	return getattr(self.getCurrentTensor(), name)
+
+	def getCurrentTensor(self):
+		return self.tensors[self.currentTensor]
+
+	def load_matrix(self, filename):
+		self.getCurrentTensor().load_matrix(filename)
+
+	def getCurrentMatrix(self):
+		return self.getCurrentTensor().getCurrentMatrix()
+
+	def getSelectedMatrix(self, selected):
+		return self.getCurrentTensor().getSelectedMatrix(selected)
+
+	def updateSelectedMatrix(self, result, selected):
+		self.getCurrentTensor().updateSelectedMatrix(result, selected)
+
+	def getMean(self, selected):
+		return self.getCurrentTensor().getMean(selected)
+
+	def getStd(self, selected):
+		return self.getCurrentTensor().getStd(selected)
+
+	def getCurrentWL(self):
+		return self.getCurrentTensor().getCurrentWL()

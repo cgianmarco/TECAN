@@ -11,14 +11,22 @@ class Controller:
 		self.view.addMoveForwardAction(self.moveForwardAction)
 		self.view.addTextChangedAction(self.textChangedAction)
 		self.view.addChangedSelectionAction(self.changedSelectionAction)
+		self.view.addChangedStackAction(self.changedStackAction)
+		# self.view.changedStackAction(1)
+		# self.view.stackList.currentRowChanged.connect(self.changedStackAction)
+		
 
 	def matrixLoadAction(self):
 		fname = self.view.getFileName()
-		self.model.load_matrix(fname)
+		self.model.addNewTensor(fname)
 		self.view.setDimensions(self.model.width, self.model.height)
-		self.view.initUI()
+		self.view.addNewStack(self.model.width, self.model.height)
+		# self.view.initUI()
 		self.view.updateGrid(self.model.getCurrentMatrix())
 		self.view.updateControlValue(self.model.getCurrentWL())
+
+	def removeZeroMatrix(self):
+		self.view.stackList.takeItem(0)
 
 	def meanAction(self):
 		mean = self.model.getMean(self.view.getSelected())
@@ -69,5 +77,14 @@ class Controller:
 			for i in range(startRow, endRow+1):
 				for j in range(startColumn, endColumn+1):
 					self.view.dataGrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
+
+	def changedStackAction(self, i):
+		self.view.stackedWidget.setCurrentIndex(i)
+		self.view.currentStack = "Matrix" + str(i)
+		self.model.currentTensor = "Matrix" + str(i)
+		print(self.model.currentTensor)
+		print(self.view.currentStack)
+		for tensor in self.model.tensors.values():
+			print(tensor.data.shape)
 
 

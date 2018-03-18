@@ -14,7 +14,7 @@ def listWidget():
         return listValue, listWidget
 
 
-def selectionGrid(width, height, changedSelectionAction):
+def selectionGrid(width, height, changed_selection_action):
         # selector
         selectionGrid = QGridLayout()
         lFrom = QLabel('Da')
@@ -51,11 +51,11 @@ def selectionGrid(width, height, changedSelectionAction):
         # leToDepth.addItems(optionsDepth)
 
         # Events
-        leFromRow.activated.connect(changedSelectionAction)
-        leToRow.activated.connect(changedSelectionAction)
+        leFromRow.activated.connect(changed_selection_action)
+        leToRow.activated.connect(changed_selection_action)
 
-        leFromColumn.activated.connect(changedSelectionAction)
-        leToColumn.activated.connect(changedSelectionAction)
+        leFromColumn.activated.connect(changed_selection_action)
+        leToColumn.activated.connect(changed_selection_action)
 
         selectionGrid.addWidget(lFrom, 1,0)
         selectionGrid.addWidget(lTo, 2,0)
@@ -74,7 +74,7 @@ def selectionGrid(width, height, changedSelectionAction):
         return selected, selectionGrid
 
 def Grid(width, height):
-        dataGrid = {}
+        datagrid = {}
         grid = QGridLayout()
         grid.setSpacing(0)
 
@@ -94,44 +94,44 @@ def Grid(width, height):
                 newLineEdit = QLineEdit()
                 newLineEdit.setFixedWidth(60)
 
-                dataGrid[(i,j)] = newLineEdit
+                datagrid[(i,j)] = newLineEdit
                 grid.addWidget(newLineEdit, i+1, j+1)
 
         stretch = QHBoxLayout()
         stretch.addStretch(1)
         grid.addLayout(stretch, 0, height + 2)
 
-        return dataGrid, grid
+        return datagrid, grid
 
 
 
 
 
 
-def controlsBar(moveBackAction, moveForwardAction, textChangedAction):
+def controlsBar(move_back_action, move_forward_action, text_changed_action):
         # Controls
         controlGrid = QGridLayout()
 
         bBack = QPushButton('back')
         bForward = QPushButton('forward')
-        bBack.clicked.connect(moveBackAction)
-        bForward.clicked.connect(moveForwardAction)
+        bBack.clicked.connect(move_back_action)
+        bForward.clicked.connect(move_forward_action)
         leValue = QLineEdit()
-        leValue.textChanged.connect(textChangedAction)
+        leValue.textChanged.connect(text_changed_action)
         leValue.setFixedWidth(50)
-        controlValue = leValue
+        control_value = leValue
 
         controlGrid.addWidget(bBack, 0,1)
         controlGrid.addWidget(leValue, 0,2)
         controlGrid.addWidget(bForward, 0,3)
-        return controlValue, controlGrid
+        return control_value, controlGrid
 
 def newStack(layouts):
-        # self.dataGrid, gridLayout = widgets.Grid(self)
-        # self.selected, selectionLayout = widgets.selectionGrid(self)
-        # self.controlValue, controlLayout = widgets.controlsBar(self)
+        # self.datagrid, grid_layout = widgets.Grid(self)
+        # self.selected, selection_layout = widgets.selectionGrid(self)
+        # self.control_value, control_layout = widgets.controlsBar(self)
 
-        # layouts = [selectionLayout, controlLayout, gridLayout]
+        # layouts = [selection_layout, control_layout, grid_layout]
 
 
         stack = QWidget()
@@ -164,7 +164,7 @@ def stackLayout():
     # Stack.addWidget(stack2)
     # Stack.addWidget(stack3)
 
-    # stacklist.currentRowChanged.connect(changedStackAction)
+    # stacklist.currentRowChanged.connect(changed_stack_action)
     #stacklist.currentRowChanged.connect(prova)
 
     hbox = QHBoxLayout()

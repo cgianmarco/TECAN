@@ -1,13 +1,13 @@
-from openpyxl import load_workbook
 import numpy as np
+import fileloader
 
 class Tensor:
 	def __init__(self):
 		self.data = np.zeros((10,10,10))
 		self.wl_start = 0
 		self.wl_end = 0
-		self.maxDepth = 0
-		self.currentDepth = 0
+		self.depth = 0
+		self.current_depth = 0
 		self.width = 0
 		self.height = 0
 
@@ -21,7 +21,7 @@ class Tensor:
 		self.wl_start = wb['E24'].value
 		self.wl_end = wb['E25'].value
 
-		self.maxDepth = self.wl_end - self.wl_start
+		self.depth = self.wl_end - self.wl_start
 
 		# Get values
 		result = []
@@ -33,25 +33,25 @@ class Tensor:
 		self.width = len(self.data[0])
 		self.height = len(self.data[0][0])
 
-	def getCurrentMatrix(self):
-		return self.data[self.currentDepth]
+	def get_current_matrix(self):
+		return self.data[self.current_depth]
 
-	def getSelectedMatrix(self, selected):
-		startRow, endRow, startColumn, endColumn = selected
-		return self.data[self.currentDepth][startRow:endRow+1, startColumn:endColumn+1]
+	def get_selected_matrix(self, selected):
+		start_row, end_row, start_column, end_column = selected
+		return self.data[self.current_depth][start_row:end_row+1, start_column:end_column+1]
 
-	def updateSelectedMatrix(self, result, selected):
-		startRow, endRow, startColumn, endColumn = selected
-		self.data[self.currentDepth][startRow:endRow+1, startColumn:endColumn+1] = result
+	def update_selected_matrix(self, result, selected):
+		start_row, end_row, start_column, end_column = selected
+		self.data[self.current_depth][start_row:end_row+1, start_column:end_column+1] = result
 
-	def getMean(self, selected):
-		return round(self.getSelectedMatrix(selected).mean(), 4)
+	def get_mean(self, selected):
+		return round(self.get_selected_matrix(selected).mean(), 4)
 
-	def getStd(self, selected):
-		return round(self.getSelectedMatrix(selected).std(), 4)
+	def get_std(self, selected):
+		return round(self.get_selected_matrix(selected).std(), 4)
 
-	def getCurrentWL(self):
-		return self.wl_start + self.currentDepth
+	def get_current_wl(self):
+		return self.wl_start + self.current_depth
 
 
 
@@ -61,101 +61,108 @@ class Model(object):
 		tensor = Tensor()
 		self.tensors = {"Matrix0" : tensor}
 		self.currentTensor = "Matrix0"
-		self.lastIndex = 0
+		self.last_index = 0
 		self.initialized = False
 
-	def addNewTensor(self, filename):
+	def add_new_tensor(self, filename):
 		if self.initialized == True:
-			self.lastIndex += 1
+			self.last_index += 1
 		else:
 			self.initialized = True
-		newKey = "Matrix" + str(self.lastIndex)
+		newKey = "Matrix" + str(self.last_index)
 		self.tensors[newKey] = Tensor()
 		self.tensors[newKey].load_matrix(filename)
 		self.currentTensor = newKey
 
-	def removeTensor(self, key):
+	def remove_tensor(self, key):
 		del self.tensors[key]
 
+
+	############################################
+	# Interface with current Tensor properties
+	############################################
 	@property
 	def data(self):
-		return self.getCurrentTensor().data
+		return self.get_current_tensor().data
 
 	@property
 	def wl_start(self):
-		return self.getCurrentTensor().wl_start
+		return self.get_current_tensor().wl_start
 
 	@property
 	def wl_end(self):
-		return self.getCurrentTensor().wl_end
+		return self.get_current_tensor().wl_end
 
 	@property
-	def maxDepth(self):
-		return self.getCurrentTensor().maxDepth
+	def depth(self):
+		return self.get_current_tensor().depth
 
 	@property
-	def currentDepth(self):
-		return self.getCurrentTensor().currentDepth
+	def current_depth(self):
+		return self.get_current_tensor().current_depth
 
 	@property
 	def width(self):
-		return self.getCurrentTensor().width
+		return self.get_current_tensor().width
 
 	@property
 	def height(self):
-		return self.getCurrentTensor().height
+		return self.get_current_tensor().height
 
 	@data.setter
 	def data(self, value):
-		self.getCurrentTensor().data = value
+		self.get_current_tensor().data = value
 
 	@wl_start.setter
 	def wl_start(self, value):
-		self.getCurrentTensor().wl_start = value
+		self.get_current_tensor().wl_start = value
 
 	@wl_end.setter
 	def wl_end(self, value):
-		self.getCurrentTensor().wl_end = value
+		self.get_current_tensor().wl_end = value
 
-	@maxDepth.setter
-	def maxDepth(self, value):
-		self.getCurrentTensor().maxDepth = value
+	@depth.setter
+	def depth(self, value):
+		self.get_current_tensor().depth = value
 
-	@currentDepth.setter
-	def currentDepth(self, value):
-		self.getCurrentTensor().currentDepth = value
+	@current_depth.setter
+	def current_depth(self, value):
+		self.get_current_tensor().current_depth = value
 
 	@width.setter
 	def width(self, value):
-		self.getCurrentTensor().width = value
+		self.get_current_tensor().width = value
 
 	@height.setter
 	def height(self, value):
-		self.getCurrentTensor().height = value
+		self.get_current_tensor().height = value
 
-	# def __getattr__(self, name):
-	# 	return getattr(self.getCurrentTensor(), name)
+	############################################
+	# Interface with current Tensor methods
+	############################################
 
-	def getCurrentTensor(self):
+	def get_current_tensor(self):
 		return self.tensors[self.currentTensor]
 
+	def get_current_wl(self):
+		return self.get_current_tensor().get_current_wl()
+
+	def get_current_matrix(self):
+		return self.get_current_tensor().get_current_matrix()
+
 	def load_matrix(self, filename):
-		self.getCurrentTensor().load_matrix(filename)
+		self.get_current_tensor().load_matrix(filename)	
 
-	def getCurrentMatrix(self):
-		return self.getCurrentTensor().getCurrentMatrix()
+	def get_selected_matrix(self, selected):
+		return self.get_current_tensor().get_selected_matrix(selected)
 
-	def getSelectedMatrix(self, selected):
-		return self.getCurrentTensor().getSelectedMatrix(selected)
+	def update_selected_matrix(self, result, selected):
+		self.get_current_tensor().update_selected_matrix(result, selected)
 
-	def updateSelectedMatrix(self, result, selected):
-		self.getCurrentTensor().updateSelectedMatrix(result, selected)
+	def get_mean(self, selected):
+		return self.get_current_tensor().get_mean(selected)
 
-	def getMean(self, selected):
-		return self.getCurrentTensor().getMean(selected)
+	def get_std(self, selected):
+		return self.get_current_tensor().get_std(selected)
 
-	def getStd(self, selected):
-		return self.getCurrentTensor().getStd(selected)
-
-	def getCurrentWL(self):
-		return self.getCurrentTensor().getCurrentWL()
+	

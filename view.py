@@ -65,14 +65,14 @@ class View(QMainWindow):
         vlayout = QVBoxLayout()
 
         self.stacks = {"Matrix0" : Stack(6, 6, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)}
-        self.currentStack = "Matrix0"
-        self.lastIndex = 0
-        self.stackList, self.stackedWidget, stackLayout = widgets.stackLayout()
+        self.current_stack = "Matrix0"
+        self.last_index = 0
+        self.stackList, self.stacked_widget, stackLayout = widgets.stackLayout()
         self.listValue, listWidget = widgets.listWidget()
         self.initialized = False
 
         # Add Child Layouts
-        self.stackedWidget.addWidget(self.stack.stack_widget)
+        self.stacked_widget.addWidget(self.stack.stack_widget)
         vlayout.addLayout(stackLayout)
     	vlayout.addWidget(listWidget)
 
@@ -86,24 +86,24 @@ class View(QMainWindow):
 
     def add_new_stack(self, width, height):
         if self.initialized == True:
-            self.lastIndex += 1
+            self.last_index += 1
         else:
             self.initialized = True
-            self.stackedWidget.removeWidget(self.stackedWidget.widget(0))
-        newKey = "Matrix" + str(self.lastIndex)
-        self.stacks[newKey] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
-        self.stackedWidget.addWidget(self.stacks[newKey].stack_widget)
-        self.stackList.addItem(newKey)
-        self.currentStack = newKey
+            self.stacked_widget.removeWidget(self.stacked_widget.widget(0))
+        new_key = "Matrix" + str(self.last_index)
+        self.stacks[new_key] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
+        self.stacked_widget.addWidget(self.stacks[new_key].stack_widget)
+        self.stackList.addItem(new_key)
+        self.current_stack = new_key
 
     def remove_stack(self, key):
         del self.stacks[key]
-        self.stackedWidget.removeWidget(self.stackedWidget.widget(0))
+        self.stacked_widget.removeWidget(self.stacked_widget.widget(0))
         self.stackList.takeItem(0)
 
     @property
     def stack(self):
-        return self.stacks[self.currentStack]
+        return self.stacks[self.current_stack]
 
     @property
     def datagrid(self):
@@ -165,7 +165,7 @@ class View(QMainWindow):
     def add_changed_selection_action(self, action):
         self.changed_selection_action = action
 
-    def addchanged_stack_action(self, action):
+    def add_changed_stack_action(self, action):
         self.stackList.currentRowChanged.connect(action)
 
     def process_trigger(self, q):

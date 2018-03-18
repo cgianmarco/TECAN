@@ -69,10 +69,10 @@ class Model(object):
 			self.last_index += 1
 		else:
 			self.initialized = True
-		newKey = "Matrix" + str(self.last_index)
-		self.tensors[newKey] = Tensor()
-		self.tensors[newKey].load_matrix(filename)
-		self.currentTensor = newKey
+		new_key = "Matrix" + str(self.last_index)
+		self.tensors[new_key] = Tensor()
+		self.tensors[new_key].load_matrix(filename)
+		self.currentTensor = new_key
 
 	def remove_tensor(self, key):
 		del self.tensors[key]

@@ -11,7 +11,7 @@ class Controller:
 		self.view.add_move_forward_action(self.move_forward_action)
 		self.view.add_text_changed_action(self.text_changed_action)
 		self.view.add_changed_selection_action(self.changed_selection_action)
-		self.view.addchanged_stack_action(self.changed_stack_action)
+		self.view.add_changed_stack_action(self.changed_stack_action)
 		# self.view.changed_stack_action(1)
 		# self.view.stackList.currentRowChanged.connect(self.changed_stack_action)
 		
@@ -79,11 +79,11 @@ class Controller:
 					self.view.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
 
 	def changed_stack_action(self, i):
-		self.view.stackedWidget.setCurrentIndex(i)
-		self.view.currentStack = "Matrix" + str(i)
+		self.view.stacked_widget.setCurrentIndex(i)
+		self.view.current_stack = "Matrix" + str(i)
 		self.model.currentTensor = "Matrix" + str(i)
 		print(self.model.currentTensor)
-		print(self.view.currentStack)
+		print(self.view.current_stack)
 		for tensor in self.model.tensors.values():
 			print(tensor.data.shape)
 

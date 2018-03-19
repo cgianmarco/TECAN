@@ -3,7 +3,7 @@ import numpy as np
 import fileloader
 
 class Tensor:
-	def __init__(self):
+	def __init__(self, ):
 		self.data = np.zeros((10,10,10))
 		self.wl_start = 0
 		self.wl_end = 0
@@ -12,7 +12,10 @@ class Tensor:
 		self.width = 0
 		self.height = 0
 
-	def load_matrix(self, filename):
+	def change_current_depth(self, value):
+		self.current_depth = value
+
+	def load(self, filename):
 		wb = load_workbook(str(filename))
 		wb = wb['Result sheet']
 
@@ -58,12 +61,13 @@ class Tensor:
 
 
 class Model(object):
-	def __init__(self):
+	def __init__(self, listener):
 		tensor = Tensor()
 		self.tensors = {"Matrix0" : tensor}
 		self.currentTensor = "Matrix0"
 		self.last_index = 0
 		self.initialized = False
+		self.listener = listener
 
 	def add_new_tensor(self, filename):
 		if self.initialized == True:
@@ -72,8 +76,11 @@ class Model(object):
 			self.initialized = True
 		new_key = "Matrix" + str(self.last_index)
 		self.tensors[new_key] = Tensor()
-		self.tensors[new_key].load_matrix(filename)
 		self.currentTensor = new_key
+		self.tensors[new_key].load(filename)
+		self.listener.on_tensor_loaded({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
+		
 
 	def remove_tensor(self, key):
 		del self.tensors[key]
@@ -151,8 +158,15 @@ class Model(object):
 	def get_current_matrix(self):
 		return self.get_current_tensor().get_current_matrix()
 
-	def load_matrix(self, filename):
-		self.get_current_tensor().load_matrix(filename)	
+
+	def change_current_depth(self, value):
+		self.get_current_tensor().change_current_depth(value)
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
+
+	def change_current_tensor(self, value):
+		self.currentTensor = value
+		i = int(value.replace("Matrix", ""))
+		self.listener.on_changed_current_tensor({"i":i})
 
 	def get_selected_matrix(self, selected):
 		return self.get_current_tensor().get_selected_matrix(selected)

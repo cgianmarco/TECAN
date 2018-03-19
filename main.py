@@ -8,9 +8,8 @@ from controller import Controller
 def main():
 	app = QApplication(sys.argv)
 	theView = View()
-	theModel = Model()
 
-	theController = Controller(theView, theModel)
+	theController = Controller(theView)
 	theView.show()
 	sys.exit(app.exec_())
 

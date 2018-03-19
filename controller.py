@@ -1,9 +1,34 @@
-class Controller:
-	def __init__(self, view, model):
-		self.view = view
-		self.model = model
+from model import Model
 
-		self.view.add_matrix_load_action(self.matrix_load_action)
+
+class Listener:
+	def __init__(self, view):
+		self.view = view
+
+	def on_tensor_loaded(self, event):
+		matrix = event['matrix']
+		wavelength = event['wavelength']
+		self.view.add_new_stack(len(matrix), len(matrix[0]))
+
+	def on_matrix_changed(self, event):
+		matrix = event['matrix']
+		wavelength = event['wavelength']
+		self.view.update_grid(matrix)
+		self.view.update_control_value(wavelength)
+
+	def on_changed_current_tensor(self, event):
+		i = event['i']
+		self.view.stacked_widget.setCurrentIndex(i)
+		self.view.current_stack = "Matrix" + str(i)
+
+
+
+class Controller:
+	def __init__(self, view):
+		self.view = view
+		self.model = Model(Listener(view))
+
+		self.view.add_tensor_load_action(self.tensor_load_action)
 		self.view.add_mean_action(self.mean_action)
 		self.view.add_std_action(self.std_action)
 		self.view.add_subtract_action(self.subtract_action)
@@ -16,14 +41,9 @@ class Controller:
 		# self.view.stackList.currentRowChanged.connect(self.changed_stack_action)
 		
 
-	def matrix_load_action(self):
+	def tensor_load_action(self):
 		fname = self.view.get_file_name()
 		self.model.add_new_tensor(fname)
-		self.view.set_dimensions(self.model.width, self.model.height)
-		self.view.add_new_stack(self.model.width, self.model.height)
-		# self.view.init_ui()
-		self.view.update_grid(self.model.get_current_matrix())
-		self.view.update_control_value(self.model.get_current_wl())
 
 	def remove_zero_matrix(self):
 		self.view.stackList.takeItem(0)
@@ -40,31 +60,24 @@ class Controller:
 		v1 = self.model.get_selected_matrix(self.view.get_selected())
 		v2 = self.view.get_list_selected()
 		result = v1 - v2
-		print(result[0][0])
 		self.update_selected_grid(result)
 
 	def move_back_action(self):
 		if self.model.current_depth > 0:
-			self.model.current_depth -= 1
-			self.view.update_grid(self.model.get_current_matrix())
-			self.view.update_control_value(self.model.get_current_wl())
+			self.model.change_current_depth(self.model.current_depth - 1)
 
 	def move_forward_action(self):
 		if self.model.current_depth < self.model.depth - 1:
-			self.model.current_depth += 1
-			self.view.update_grid(self.model.get_current_matrix())
-			self.view.update_control_value(self.model.get_current_wl())
+			self.model.change_current_depth(self.model.current_depth + 1)
 
 	def update_selected_grid(self, result):
 		self.model.update_selected_matrix(result, self.view.get_selected())
-		self.view.update_grid(self.model.get_current_matrix())
 
 	def text_changed_action(self, text):
 		try:
 			value = int(text)
 			if self.model.wl_start <= value < self.model.wl_end:
-				self.model.current_depth = value - self.model.wl_start
-				self.view.update_grid(self.model.get_current_matrix())
+				self.model.change_current_depth(value - self.model.wl_start)
 		except ValueError:
 			pass
 
@@ -79,12 +92,6 @@ class Controller:
 					self.view.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
 
 	def changed_stack_action(self, i):
-		self.view.stacked_widget.setCurrentIndex(i)
-		self.view.current_stack = "Matrix" + str(i)
-		self.model.currentTensor = "Matrix" + str(i)
-		print(self.model.currentTensor)
-		print(self.view.current_stack)
-		for tensor in self.model.tensors.values():
-			print(tensor.data.shape)
+		self.model.change_current_tensor("Matrix" + str(i))
 
 

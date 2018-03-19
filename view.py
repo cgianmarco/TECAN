@@ -33,7 +33,7 @@ class View(QMainWindow):
         self.init_ui()
 
     def init_listeners(self):
-        self.matrix_load_action = lambda x : None
+        self.tensor_load_action = lambda x : None
         self.mean_action = lambda x : None
         self.std_action = lambda x : None
         self.subtract_action = lambda x : None
@@ -141,8 +141,8 @@ class View(QMainWindow):
     def get_file_name(self):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
 
-    def add_matrix_load_action(self, action):
-        self.matrix_load_action = action
+    def add_tensor_load_action(self, action):
+        self.tensor_load_action = action
 
     def add_mean_action(self, action):
         self.mean_action = action
@@ -170,7 +170,7 @@ class View(QMainWindow):
 
     def process_trigger(self, q):
         if q.text() == 'Load Matrix':
-            self.matrix_load_action()
+            self.tensor_load_action()
         elif q.text() == 'Mean':
             self.mean_action()
         elif q.text() == 'Value from Selected':

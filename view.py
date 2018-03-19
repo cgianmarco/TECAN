@@ -6,8 +6,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import widgets
 
-class Stack():
-    def __init__(self, width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action):
+def default_action(*args, **kwargs):
+    raise NotImplementedError("Action not yet implemented")
+
+class Stack(object):
+    def __init__(self, width, height, changed_selection_action=default_action, move_back_action=default_action, move_forward_action=default_action, text_changed_action=default_action):
         self.width_value = width
         self.height_value = height
         self.datagrid, grid_layout = widgets.Grid(width, height)
@@ -15,12 +18,56 @@ class Stack():
         self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
 
         layouts = [selection_layout, control_layout, grid_layout]
-        self.stack_widget = QWidget()
+        self.widget = QWidget()
         layout = QVBoxLayout()
         for childLayout in layouts:
             layout.addLayout(childLayout)
         layout.addStretch(1)
-        self.stack_widget.setLayout(layout)
+        self.widget.setLayout(layout)
+
+    def update_grid(self, matrix):
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                value = matrix[i][j]
+                self.datagrid[(i,j)].setText(str(value))
+
+class StackList():
+    def __init__(self):
+        self.stacks = {}
+        self.list_widget, self.values_widget, self.stack_container_layout = widgets.stackLayout()
+        self.current_stack = ""
+        self.last_index = 0
+        self.initialized = False
+
+    def add_stack(self, width, height, changed_selection_action=default_action, move_back_action=default_action, move_forward_action=default_action, text_changed_action=default_action):
+        if self.initialized == True:
+            self.last_index += 1
+        else:
+            self.initialized = True
+            # self.values_widget.removeWidget(self.stacked_widget.widget(0))
+        new_key = "Matrix" + str(self.last_index)
+        self.stacks[new_key] = Stack(width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action)
+        self.list_widget.addItem(new_key)
+        self.values_widget.addWidget(self.stacks[new_key].widget)
+        self.last_index = self.get_next_last_index()
+        if self.current_stack == "":
+                self.current_stack = self.stacks.keys()[0]
+
+    def remove_stack(self, key):
+        index = int(key.replace("Matrix", ""))
+        del self.stacks[key]
+        self.values_widget.removeWidget(self.values_widget.widget(index))
+        self.list_widget.takeItem(index)
+
+    def get_next_last_index(self):
+        indeces = [ int(key.replace("Matrix", "")) for key in self.stacks.keys() ]
+        free_indeces = [ i for i in range(max(indeces)) if i not in indeces ]
+        if len(free_indeces) > 0:
+            return free_indeces[0]
+        else:
+            return max(indeces) + 1
+
+
 
 
 
@@ -64,16 +111,12 @@ class View(QMainWindow):
         # main layout
         vlayout = QVBoxLayout()
 
-        self.stacks = {"Matrix0" : Stack(6, 6, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)}
-        self.current_stack = "Matrix0"
-        self.last_index = 0
-        self.stackList, self.stacked_widget, stackLayout = widgets.stackLayout()
+        
+        self.stack_list = StackList()
         self.listValue, listWidget = widgets.listWidget()
-        self.initialized = False
 
         # Add Child Layouts
-        self.stacked_widget.addWidget(self.stack.stack_widget)
-        vlayout.addLayout(stackLayout)
+        vlayout.addLayout(self.stack_list.stack_container_layout)
     	vlayout.addWidget(listWidget)
 
 
@@ -84,26 +127,23 @@ class View(QMainWindow):
         self.setWindowTitle('TECAN Reader')
         self.show()
 
-    def add_new_stack(self, width, height):
-        if self.initialized == True:
-            self.last_index += 1
-        else:
-            self.initialized = True
-            self.stacked_widget.removeWidget(self.stacked_widget.widget(0))
-        new_key = "Matrix" + str(self.last_index)
-        self.stacks[new_key] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
-        self.stacked_widget.addWidget(self.stacks[new_key].stack_widget)
-        self.stackList.addItem(new_key)
-        self.current_stack = new_key
+    def add_new_stack(self, width, height, changed_selection_action=default_action, move_back_action=default_action, move_forward_action=default_action, text_changed_action=default_action):
+        self.stack_list.add_stack(width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action)
 
     def remove_stack(self, key):
-        del self.stacks[key]
-        self.stacked_widget.removeWidget(self.stacked_widget.widget(0))
-        self.stackList.takeItem(0)
+        self.stack_list.remove_stack(key)
+
+    @property
+    def stacked_widget(self):
+        return self.stack_list.values_widget
+
+    @property
+    def stackList(self):
+        return self.stack_list.list_widget
 
     @property
     def stack(self):
-        return self.stacks[self.current_stack]
+        return self.stack_list.stacks[self.stack_list.current_stack]
 
     @property
     def datagrid(self):
@@ -166,7 +206,7 @@ class View(QMainWindow):
         self.changed_selection_action = action
 
     def add_changed_stack_action(self, action):
-        self.stackList.currentRowChanged.connect(action)
+        self.stack_list.list_widget.currentRowChanged.connect(action)
 
     def process_trigger(self, q):
         if q.text() == 'Load Matrix':
@@ -179,10 +219,7 @@ class View(QMainWindow):
             self.std_action()
 
     def update_grid(self, matrix):
-        for i in range(len(matrix)):
-            for j in range(len(matrix[i])):
-                value = matrix[i][j]
-                self.datagrid[(i,j)].setText(str(value))
+        self.stack.update_grid(matrix)
 
     def get_selected(self):
         return [ int(elem.currentText()) for elem in self.selected ]

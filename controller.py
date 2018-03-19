@@ -9,7 +9,7 @@ class Listener:
 	def on_tensor_loaded(self, event):
 		matrix = event['matrix']
 		wavelength = event['wavelength']
-		self.view.add_new_stack(len(matrix), len(matrix[0]))
+		self.view.add_new_stack(len(matrix), len(matrix[0]), self.view.changed_selection_action, self.view.move_back_action, self.view.move_forward_action, self.view.text_changed_action)
 
 	def on_matrix_changed(self, event):
 		matrix = event['matrix']

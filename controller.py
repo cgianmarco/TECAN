@@ -1,4 +1,5 @@
 from model import Model
+from fileloader import FileLoader
 
 
 class Listener:
@@ -42,8 +43,8 @@ class Controller:
 		
 
 	def tensor_load_action(self):
-		fname = self.view.get_file_name()
-		self.model.add_new_tensor(fname)
+		fileloader = FileLoader(self.view.get_file_name())
+		self.model.add_new_tensor(fileloader.parse())
 
 	def remove_zero_matrix(self):
 		self.view.stackList.takeItem(0)
@@ -60,7 +61,7 @@ class Controller:
 		v1 = self.model.get_selected_matrix(self.view.get_selected())
 		v2 = self.view.get_list_selected()
 		result = v1 - v2
-		self.update_selected_grid(result)
+		self.model.update_selected_matrix(result, self.view.get_selected())
 
 	def move_back_action(self):
 		if self.model.current_depth > 0:
@@ -68,10 +69,7 @@ class Controller:
 
 	def move_forward_action(self):
 		if self.model.current_depth < self.model.depth - 1:
-			self.model.change_current_depth(self.model.current_depth + 1)
-
-	def update_selected_grid(self, result):
-		self.model.update_selected_matrix(result, self.view.get_selected())
+			self.model.change_current_depth(self.model.current_depth + 1)		
 
 	def text_changed_action(self, text):
 		try:

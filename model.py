@@ -1,6 +1,4 @@
-from openpyxl import load_workbook
 import numpy as np
-import fileloader
 
 class Tensor:
 	def __init__(self, ):
@@ -15,25 +13,14 @@ class Tensor:
 	def change_current_depth(self, value):
 		self.current_depth = value
 
-	def load(self, filename):
-		wb = load_workbook(str(filename))
-		wb = wb['Result sheet']
-
-		data_starting_line = 35
-
+	def load(self, loadedfile):
 		# Wavelengths interval
-		self.wl_start = wb['E24'].value
-		self.wl_end = wb['E25'].value
+		self.wl_start = loadedfile['wl_start']
+		self.wl_end = loadedfile['wl_end']
 
-		self.depth = self.wl_end - self.wl_start
+		self.depth = loadedfile['depth']
 
-		# Get values
-		result = []
-		for i in range(self.wl_end - self.wl_start):
-			row = list(wb[data_starting_line + i])
-			result.append([ cell.value for cell in row[1:] ])
-
-		self.data = np.array(result).reshape([self.wl_end - self.wl_start, 8,8])
+		self.data = loadedfile['data']
 		self.width = len(self.data[0])
 		self.height = len(self.data[0][0])
 
@@ -69,7 +56,7 @@ class Model(object):
 		self.initialized = False
 		self.listener = listener
 
-	def add_new_tensor(self, filename):
+	def add_new_tensor(self, loadedfile):
 		if self.initialized == True:
 			self.last_index += 1
 		else:
@@ -77,7 +64,7 @@ class Model(object):
 		new_key = "Matrix" + str(self.last_index)
 		self.tensors[new_key] = Tensor()
 		self.currentTensor = new_key
-		self.tensors[new_key].load(filename)
+		self.tensors[new_key].load(loadedfile)
 		self.listener.on_tensor_loaded({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
 		

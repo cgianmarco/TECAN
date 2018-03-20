@@ -39,7 +39,7 @@ class StackList():
         self.last_index = 0
         self.initialized = False
 
-    def add_stack(self, width, height, changed_selection_action=default_action, move_back_action=default_action, move_forward_action=default_action, text_changed_action=default_action):
+    def add_stack(self, width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action):
         if self.initialized == True:
             self.last_index += 1
         else:
@@ -147,36 +147,36 @@ class View(QMainWindow):
 
     @property
     def datagrid(self):
-        return self.stack.datagrid
+        return self.stack_list.stacks[self.stack_list.current_stack].datagrid
 
     @property
     def control_value(self):
-        return self.stack.control_value
+        return self.stack_list.stacks[self.stack_list.current_stack].control_value
 
     @property
     def selected(self):
-        return self.stack.selected
+        return self.stack_list.stacks[self.stack_list.current_stack].selected
 
     @property
     def width_value(self):
-        return self.stack.width_value
+        return self.stack_list.stacks[self.stack_list.current_stack].width_value
 
     @property
     def height_value(self):
-        return self.stack.height_value
+        return self.stack_list.stacks[self.stack_list.current_stack].height_value
 
     @width_value.setter
     def width_value(self, value):
-        self.stack.width_value = value
+        self.stack_list.stacks[self.stack_list.current_stack].width_value = value
 
     @height_value.setter
     def height_value(self, value):
-        self.stack.height_value = value
+        self.stack_list.stacks[self.stack_list.current_stack].height_value = value
 
 
     def set_dimensions(self, width, height):
-        self.width_value = width
-        self.height_value = height
+        self.stack_list.stacks[self.stack_list.current_stack].width_value = width
+        self.stack_list.stacks[self.stack_list.current_stack].height_value = height
 
     def get_file_name(self):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")

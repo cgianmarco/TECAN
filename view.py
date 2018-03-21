@@ -22,6 +22,8 @@ class Stack():
         layout.addStretch(1)
         self.stack_widget.setLayout(layout)
 
+def DEFAULT_ACTION(*args, **kwargs):
+    raise NotImplementedError("Action not yet implemented")
 
 
 class View(QMainWindow):
@@ -33,15 +35,15 @@ class View(QMainWindow):
         self.init_ui()
 
     def init_listeners(self):
-        self.tensor_load_action = lambda x : None
-        self.mean_action = lambda x : None
-        self.std_action = lambda x : None
-        self.subtract_action = lambda x : None
-        self.move_back_action = lambda x : None
-        self.move_forward_action = lambda x : None
-        self.text_changed_action = lambda x : None
-        self.changed_selection_action = lambda x : None
-        self.changed_stack_action = lambda x : None
+        self.tensor_load_action = DEFAULT_ACTION
+        self.mean_action = DEFAULT_ACTION
+        self.std_action = DEFAULT_ACTION
+        self.subtract_action = DEFAULT_ACTION
+        self.move_back_action = DEFAULT_ACTION
+        self.move_forward_action = DEFAULT_ACTION
+        self.text_changed_action = DEFAULT_ACTION
+        self.changed_selection_action = DEFAULT_ACTION
+        self.changed_stack_action = DEFAULT_ACTION
 
 
 
@@ -64,15 +66,13 @@ class View(QMainWindow):
         # main layout
         vlayout = QVBoxLayout()
 
-        self.stacks = {"Matrix0" : Stack(6, 6, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)}
-        self.current_stack = "Matrix0"
-        self.last_index = 0
+        self.last_index = -1
+        self.stacks = {}
+        self.current_stack = ""
         self.stackList, self.stacked_widget, stackLayout = widgets.stackLayout()
         self.listValue, listWidget = widgets.listWidget()
-        self.initialized = False
 
         # Add Child Layouts
-        self.stacked_widget.addWidget(self.stack.stack_widget)
         vlayout.addLayout(stackLayout)
     	vlayout.addWidget(listWidget)
 
@@ -85,11 +85,7 @@ class View(QMainWindow):
         self.show()
 
     def add_new_stack(self, width, height):
-        if self.initialized == True:
-            self.last_index += 1
-        else:
-            self.initialized = True
-            self.stacked_widget.removeWidget(self.stacked_widget.widget(0))
+        self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
         self.stacks[new_key] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
         self.stacked_widget.addWidget(self.stacks[new_key].stack_widget)

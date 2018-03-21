@@ -26,6 +26,37 @@ def DEFAULT_ACTION(*args, **kwargs):
     raise NotImplementedError("Action not yet implemented")
 
 
+class StackList():
+    def __init__(self):
+        self.stacks = {}
+        self.current_stack = ""
+        self.last_index = -1
+
+        # Listeners
+        self.subtract_action = DEFAULT_ACTION
+        self.move_back_action = DEFAULT_ACTION
+        self.move_forward_action = DEFAULT_ACTION
+        self.text_changed_action = DEFAULT_ACTION
+        self.changed_selection_action = DEFAULT_ACTION
+        self.changed_stack_action = DEFAULT_ACTION
+
+        self.list_widget, self.values_widget, self.stack_layout = widgets.stackLayout()
+
+    def add_new_stack(self, width, height):
+        self.last_index += 1
+        new_key = "Matrix" + str(self.last_index)
+        self.stacks[new_key] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
+        self.values_widget.addWidget(self.stacks[new_key].stack_widget)
+        self.list_widget.addItem(new_key)
+        self.current_stack = new_key
+
+    def remove_stack(self, key):
+        del self.stacks[key]
+        self.values_widget.removeWidget(self.values_widget.widget(0))
+        self.list_widget.takeItem(0)
+       
+
+
 class View(QMainWindow):
     
     def __init__(self, parent=None):
@@ -38,12 +69,6 @@ class View(QMainWindow):
         self.tensor_load_action = DEFAULT_ACTION
         self.mean_action = DEFAULT_ACTION
         self.std_action = DEFAULT_ACTION
-        self.subtract_action = DEFAULT_ACTION
-        self.move_back_action = DEFAULT_ACTION
-        self.move_forward_action = DEFAULT_ACTION
-        self.text_changed_action = DEFAULT_ACTION
-        self.changed_selection_action = DEFAULT_ACTION
-        self.changed_stack_action = DEFAULT_ACTION
 
 
 
@@ -66,14 +91,11 @@ class View(QMainWindow):
         # main layout
         vlayout = QVBoxLayout()
 
-        self.last_index = -1
-        self.stacks = {}
-        self.current_stack = ""
-        self.stackList, self.stacked_widget, stackLayout = widgets.stackLayout()
+        self.stack_list = StackList()        
         self.listValue, listWidget = widgets.listWidget()
 
         # Add Child Layouts
-        vlayout.addLayout(stackLayout)
+        vlayout.addLayout(self.stack_list.stack_layout)
     	vlayout.addWidget(listWidget)
 
 
@@ -85,21 +107,14 @@ class View(QMainWindow):
         self.show()
 
     def add_new_stack(self, width, height):
-        self.last_index += 1
-        new_key = "Matrix" + str(self.last_index)
-        self.stacks[new_key] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
-        self.stacked_widget.addWidget(self.stacks[new_key].stack_widget)
-        self.stackList.addItem(new_key)
-        self.current_stack = new_key
+        self.stack_list.add_new_stack(width, height)
 
     def remove_stack(self, key):
-        del self.stacks[key]
-        self.stacked_widget.removeWidget(self.stacked_widget.widget(0))
-        self.stackList.takeItem(0)
+        self.stack_list.remove_stack(key)
 
     @property
     def stack(self):
-        return self.stacks[self.current_stack]
+        return self.stack_list.stacks[self.stack_list.current_stack]
 
     @property
     def datagrid(self):
@@ -150,19 +165,20 @@ class View(QMainWindow):
         self.subtract_action = action
 
     def add_move_back_action(self, action):
-        self.move_back_action = action
+        self.stack_list.move_back_action = action
 
     def add_move_forward_action(self, action):
-        self.move_forward_action = action
+        self.stack_list.move_forward_action = action
 
     def add_text_changed_action(self, action):
-        self.text_changed_action = action
+        self.stack_list.text_changed_action = action
 
     def add_changed_selection_action(self, action):
-        self.changed_selection_action = action
+        self.stack_list.changed_selection_action = action
 
     def add_changed_stack_action(self, action):
-        self.stackList.currentRowChanged.connect(action)
+        # self.stack_list.changed_stack_action = action
+        self.stack_list.list_widget.currentRowChanged.connect(action)
 
     def process_trigger(self, q):
         if q.text() == 'Load Matrix':

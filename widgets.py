@@ -82,12 +82,12 @@ def Grid(width, height):
             newButton = QLabel(str(i))
             newButton.setAlignment(Qt.AlignHCenter)
             newButton.setFixedWidth(60)
-            grid.addWidget(newButton, 0, i+1)
+            grid.addWidget(newButton, i+1, 0)
 
         for j in range(height):
             newButton = QLabel(str(j))
             newButton.setFixedWidth(20)
-            grid.addWidget(newButton, j+1, 0)
+            grid.addWidget(newButton, 0, j+1)
 
         for i in range(width):
             for j in range(height):

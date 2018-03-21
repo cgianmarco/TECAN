@@ -40,11 +40,7 @@ class StackList():
         self.initialized = False
 
     def add_stack(self, width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action):
-        if self.initialized == True:
-            self.last_index += 1
-        else:
-            self.initialized = True
-            # self.values_widget.removeWidget(self.stacked_widget.widget(0))
+        # self.values_widget.removeWidget(self.stacked_widget.widget(0))
         new_key = "Matrix" + str(self.last_index)
         self.stacks[new_key] = Stack(width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action)
         self.list_widget.addItem(new_key)

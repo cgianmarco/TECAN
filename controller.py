@@ -19,6 +19,7 @@ class Listener:
 
 	def on_changed_current_tensor(self, event):
 		i = event['i']
+		print([self.view.stack_list.list_widget.item(i).text() for i in range(self.view.stack_list.list_widget.count())])
 		self.view.stacked_widget.setCurrentIndex(i)
 		self.view.current_stack = "Matrix" + str(i)
 

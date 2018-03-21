@@ -50,17 +50,14 @@ class Tensor:
 class Model(object):
 	def __init__(self, listener):
 		tensor = Tensor()
-		self.tensors = {"Matrix0" : tensor}
-		self.currentTensor = "Matrix0"
+		self.tensors = {}
+		self.currentTensor = ""
 		self.last_index = 0
 		self.initialized = False
 		self.listener = listener
 
 	def add_new_tensor(self, loadedfile):
-		if self.initialized == True:
-			self.last_index += 1
-		else:
-			self.initialized = True
+		self.last_index += 1
 		new_key = "Matrix" + str(self.last_index)
 		self.tensors[new_key] = Tensor()
 		self.currentTensor = new_key
@@ -152,14 +149,17 @@ class Model(object):
 
 	def change_current_tensor(self, value):
 		self.currentTensor = value
+		print(self.tensors.keys())
 		i = int(value.replace("Matrix", ""))
 		self.listener.on_changed_current_tensor({"i":i})
+
 
 	def get_selected_matrix(self, selected):
 		return self.get_current_tensor().get_selected_matrix(selected)
 
 	def update_selected_matrix(self, result, selected):
 		self.get_current_tensor().update_selected_matrix(result, selected)
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
 
 	def get_mean(self, selected):
 		return self.get_current_tensor().get_mean(selected)

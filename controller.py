@@ -14,6 +14,7 @@ class Listener:
 	def on_matrix_changed(self, event):
 		matrix = event['matrix']
 		wavelength = event['wavelength']
+		time = event['time']
 		self.view.update_grid(matrix)
 		self.view.update_control_value(wavelength)
 

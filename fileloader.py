@@ -21,6 +21,8 @@ class FileLoader:
 			row = list(self.doc[data_starting_line + i])
 			result.append([ cell.value for cell in row[1:] ])
 
-		data = np.array(result).reshape([depth, 8,8])
-		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'depth': depth}
+		width = 8
+		height = 8
+		data = np.array(result).reshape([1, depth, width, height])
+		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'depth': depth, 'width': width, 'height':height}
 

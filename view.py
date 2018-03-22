@@ -177,7 +177,7 @@ class View(QMainWindow):
         self.stack_list.changed_selection_action = action
 
     def add_changed_stack_action(self, action):
-        # self.stack_list.changed_stack_action = action
+        self.stack_list.changed_stack_action = action
         self.stack_list.list_widget.currentRowChanged.connect(action)
 
     def process_trigger(self, q):

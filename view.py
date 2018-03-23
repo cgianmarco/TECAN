@@ -7,18 +7,25 @@ from PyQt4.QtCore import *
 import widgets
 
 class Stack():
-    def __init__(self, width, height, changed_selection_action, move_back_action, move_forward_action, text_changed_action):
-        self.width_value = width
-        self.height_value = height
-        self.datagrid, grid_layout = widgets.Grid(width, height)
-        self.selected, selection_layout = widgets.selectionGrid(width, height, changed_selection_action)
-        self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
+    def __init__(self, shape, changed_selection_action, move_back_action, move_forward_action, text_changed_action):
+        self.time = shape['time']
+        self.depth = shape['depth']
+        self.width_value = shape['width']
+        self.height_value = shape['height']
+        self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
+        self.selected, selection_layout = widgets.selectionGrid(self.width_value, self.height_value, changed_selection_action)
+        if self.depth > 1:
+            self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
+        else:
+            self.control_value = None
+            control_layout = None
 
         layouts = [selection_layout, control_layout, grid_layout]
         self.stack_widget = QWidget()
         layout = QVBoxLayout()
         for childLayout in layouts:
-            layout.addLayout(childLayout)
+            if childLayout is not None:
+                layout.addLayout(childLayout)
         layout.addStretch(1)
         self.stack_widget.setLayout(layout)
 
@@ -42,10 +49,10 @@ class StackList():
 
         self.list_widget, self.values_widget, self.stack_layout = widgets.stackLayout()
 
-    def add_new_stack(self, width, height):
+    def add_new_stack(self, shape):
         self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
-        self.stacks[new_key] = Stack(width, height, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
+        self.stacks[new_key] = Stack(shape, self.changed_selection_action, self.move_back_action, self.move_forward_action, self.text_changed_action)
         self.values_widget.addWidget(self.stacks[new_key].stack_widget)
         self.list_widget.addItem(new_key)
         self.current_stack = new_key
@@ -106,8 +113,8 @@ class View(QMainWindow):
         self.setWindowTitle('TECAN Reader')
         self.show()
 
-    def add_new_stack(self, width, height):
-        self.stack_list.add_new_stack(width, height)
+    def add_new_stack(self, shape):
+        self.stack_list.add_new_stack(shape)
 
     def remove_stack(self, key):
         self.stack_list.remove_stack(key)
@@ -200,7 +207,8 @@ class View(QMainWindow):
         return [ int(elem.currentText()) for elem in self.selected ]
 
     def update_control_value(self, value):
-        self.control_value.setText(str(value))
+        if self.control_value is not None:
+            self.control_value.setText(str(value))
 
     def get_list_selected(self):
         return float(str(self.listValue.currentItem().text()).split(" ")[1])

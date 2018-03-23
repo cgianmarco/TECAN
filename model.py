@@ -6,6 +6,7 @@ class Tensor:
 		self.wl_start = 0
 		self.wl_end = 0
 		self.depth = 0
+		self.time = 0
 		self.current_depth = 0
 		self.current_time = 0
 		self.width = 0
@@ -23,6 +24,7 @@ class Tensor:
 		self.wl_end = loadedfile['wl_end']
 
 		self.depth = loadedfile['depth']
+		self.time = loadedfile['time']
 
 		self.data = loadedfile['data']
 		self.width = loadedfile['width']
@@ -68,7 +70,7 @@ class Model(object):
 		self.tensors[new_key] = Tensor()
 		self.currentTensor = new_key
 		self.tensors[new_key].load(loadedfile)
-		self.listener.on_tensor_loaded({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl()})
+		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}})
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
 		
 
@@ -94,6 +96,10 @@ class Model(object):
 	@property
 	def depth(self):
 		return self.get_current_tensor().depth
+
+	@property
+	def time(self):
+		return self.get_current_tensor().time
 
 	@property
 	def current_depth(self):

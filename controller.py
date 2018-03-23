@@ -1,5 +1,5 @@
 from model import Model
-from fileloader import FileLoader
+from fileloader import FileLoader, TwoDimFileLoader
 
 
 class Listener:
@@ -7,9 +7,8 @@ class Listener:
 		self.view = view
 
 	def on_tensor_loaded(self, event):
-		matrix = event['matrix']
-		wavelength = event['wavelength']
-		self.view.add_new_stack(len(matrix), len(matrix[0]))
+		shape = event['shape']
+		self.view.add_new_stack(shape)
 
 	def on_matrix_changed(self, event):
 		matrix = event['matrix']
@@ -45,6 +44,7 @@ class Controller:
 
 	def tensor_load_action(self):
 		fileloader = FileLoader(self.view.get_file_name())
+		# fileloader = TwoDimFileLoader(self.view.get_file_name())
 		self.model.add_new_tensor(fileloader.parse())
 
 	def remove_zero_matrix(self):

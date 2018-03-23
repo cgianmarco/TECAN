@@ -19,6 +19,7 @@ class Listener:
 
 	def on_changed_current_tensor(self, event):
 		i = event['i']
+		# Controller should not know about stack_list attribute
 		self.view.stack_list.values_widget.setCurrentIndex(i)
 		self.view.stack_list.current_stack = "Matrix" + str(i)
 
@@ -47,21 +48,23 @@ class Controller:
 		# fileloader = TwoDimFileLoader(self.view.get_file_name())
 		self.model.add_new_tensor(fileloader.parse())
 
-	def remove_zero_matrix(self):
-		self.view.stackList.takeItem(0)
-
 	def mean_action(self):
 		print(self.model.get_selected_matrix(self.view.get_selected()))
 		mean = self.model.get_mean(self.view.get_selected())
+		# This should change model only
+		# View should change through listener
 		self.view.listValue.addItem("Mean: " +  str(mean))
 
 	def std_action(self):
 		std = self.model.get_std(self.view.get_selected())
+		# This should change model only
+		# View should change through listener
 		self.view.listValue.addItem("Std: " +  str(std))
 
 	def subtract_action(self):
 		v1 = self.model.get_selected_matrix(self.view.get_selected())
 		v2 = self.view.get_list_selected()
+		# Subtraction should be delegated to model
 		result = v1 - v2
 		self.model.update_selected_matrix(result, self.view.get_selected())
 
@@ -85,6 +88,8 @@ class Controller:
 			pass
 
 	def changed_selection_action(self):
+		# This should change selected in model
+		# Listener should have method onSelectedChange that changes view accordingly (?)
 		selected = self.view.get_selected()
 		start_row = selected['start_width']
 		end_row = selected['end_width']

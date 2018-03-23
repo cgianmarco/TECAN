@@ -14,6 +14,8 @@ class Stack():
         self.height_value = shape['height']
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
+
+        # Add controlBar if depth > 1
         if self.depth > 1:
             self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
         else:

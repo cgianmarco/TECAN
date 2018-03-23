@@ -14,7 +14,8 @@ def listWidget():
         return listValue, listWidget
 
 
-def selectionGrid(width, height, changed_selection_action):
+def selectionGrid(shape, changed_selection_action):
+        print(shape)
         # selector
         selectionGrid = QGridLayout()
         lFrom = QLabel('Da')
@@ -23,26 +24,60 @@ def selectionGrid(width, height, changed_selection_action):
         lFrom.setFixedWidth(20)
         lTo.setFixedWidth(20)
 
-        lRow = QLabel('Riga')
-        lColumn = QLabel('Colonna')
-        lDepth = QLabel('Profondità')
+        selected = []
+        lDims = []
+        selection = {}
+        for dim in shape.keys():
+            if shape[dim] > 1:
+                lDim = QLabel(dim.capitalize())
+                lDims.append(lDim)
+                optionsDim = [str(x) for x in range(shape[dim])]
 
-        # optionsDepth = [str(x) for x in range(len(data))]
-        optionsRow = [str(x) for x in range(width)]
-        optionsColumn = [str(x) for x in range(height)]
+                leFromDim = QComboBox()
+                leFromDim.addItems(optionsDim)
 
-        leFromRow = QComboBox()
-        leFromRow.addItems(optionsRow)
+                leToDim = QComboBox()
+                leToDim.addItems(optionsDim)
+
+                selected.extend([leFromDim, leToDim])
+                selection[dim] = (leFromDim, leToDim)
+                leFromDim.activated.connect(changed_selection_action)
+                leToDim.activated.connect(changed_selection_action)
+            else:
+                selection[dim] = None
+
+        print(selected)
+
+        for i in range(len(lDims)):
+            selectionGrid.addWidget(lDims[i], 0, i+1)
+
+        print(len(selected))
+        for j in range((len(selected)/2)):
+            selectionGrid.addWidget(selected[2*j], 1, j+1)
+            selectionGrid.addWidget(selected[2*j+1], 2, j+1)
+
+
+
+        # lRow = QLabel('Riga')
+        # lColumn = QLabel('Colonna')
+        # lDepth = QLabel('Profondità')
+
+        # # optionsDepth = [str(x) for x in range(len(data))]
+        # optionsRow = [str(x) for x in range(width)]
+        # optionsColumn = [str(x) for x in range(height)]
+
+        # leFromRow = QComboBox()
+        # leFromRow.addItems(optionsRow)
         
-        leToRow = QComboBox()
-        leToRow.addItems(optionsRow)
+        # leToRow = QComboBox()
+        # leToRow.addItems(optionsRow)
 
-        leFromColumn = QComboBox()
-        leFromColumn.addItems(optionsColumn)
+        # leFromColumn = QComboBox()
+        # leFromColumn.addItems(optionsColumn)
 
-        leToColumn = QComboBox()
-        leToColumn.addItems(optionsColumn)
-        selected = [leFromRow, leToRow, leFromColumn, leToColumn]
+        # leToColumn = QComboBox()
+        # leToColumn.addItems(optionsColumn)
+        # selected = [leFromRow, leToRow, leFromColumn, leToColumn]
 
         # leFromDepth = QComboBox()
         # leFromDepth.addItems(optionsDepth)
@@ -51,27 +86,32 @@ def selectionGrid(width, height, changed_selection_action):
         # leToDepth.addItems(optionsDepth)
 
         # Events
-        leFromRow.activated.connect(changed_selection_action)
-        leToRow.activated.connect(changed_selection_action)
+        # leFromRow.activated.connect(changed_selection_action)
+        # leToRow.activated.connect(changed_selection_action)
 
-        leFromColumn.activated.connect(changed_selection_action)
-        leToColumn.activated.connect(changed_selection_action)
+        # leFromColumn.activated.connect(changed_selection_action)
+        # leToColumn.activated.connect(changed_selection_action)
 
         selectionGrid.addWidget(lFrom, 1,0)
         selectionGrid.addWidget(lTo, 2,0)
 
-        selectionGrid.addWidget(lRow, 0,1)
-        selectionGrid.addWidget(lColumn, 0,2)
+        # selectionGrid.addWidget(lRow, 0,1)
+        # selectionGrid.addWidget(lColumn, 0,2)
         # selectionGrid.addWidget(lDepth, 0,3)
 
-        selectionGrid.addWidget(leFromRow, 1,1)
-        selectionGrid.addWidget(leFromColumn, 1,2)
-        # selectionGrid.addWidget(leFromDepth, 1,3)
+        # selectionGrid.addWidget(leFromRow, 1,1)
+        # selectionGrid.addWidget(leToRow, 2,1)
 
-        selectionGrid.addWidget(leToRow, 2,1)
-        selectionGrid.addWidget(leToColumn, 2,2)
+        # selectionGrid.addWidget(leFromColumn, 1,2)
+        # selectionGrid.addWidget(leToColumn, 2,2)
+
+        # # selectionGrid.addWidget(leFromDepth, 1,3)
         # selectionGrid.addWidget(leToDepth, 2,3)
-        return selected, selectionGrid
+
+        
+        
+        
+        return selection, selectionGrid
 
 def Grid(width, height):
         datagrid = {}

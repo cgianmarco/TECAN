@@ -51,6 +51,7 @@ class Controller:
 		self.view.stackList.takeItem(0)
 
 	def mean_action(self):
+		print(self.model.get_selected_matrix(self.view.get_selected()))
 		mean = self.model.get_mean(self.view.get_selected())
 		self.view.listValue.addItem("Mean: " +  str(mean))
 
@@ -67,25 +68,35 @@ class Controller:
 	def move_back_action(self):
 		if self.model.current_depth > 0:
 			self.model.change_current_depth(self.model.current_depth - 1)
+		self.changed_selection_action()
 
 	def move_forward_action(self):
 		if self.model.current_depth < self.model.depth - 1:
-			self.model.change_current_depth(self.model.current_depth + 1)		
+			self.model.change_current_depth(self.model.current_depth + 1)	
+		self.changed_selection_action()	
 
 	def text_changed_action(self, text):
 		try:
 			value = int(text)
 			if self.model.wl_start <= value < self.model.wl_end:
 				self.model.change_current_depth(value - self.model.wl_start)
+			self.changed_selection_action()
 		except ValueError:
 			pass
 
 	def changed_selection_action(self):
-		start_row, end_row, start_column, end_column = [ elem for elem in self.view.get_selected()]
+		selected = self.view.get_selected()
+		start_row = selected['start_width']
+		end_row = selected['end_width']
+		start_column = selected['start_height']
+		end_column = selected['end_height']
+		start_depth = selected['start_depth']
+		end_depth = selected['end_depth']
+		# start_row, end_row, start_column, end_column = [ elem for elem in self.view.get_selected()]
 		for elem in self.view.datagrid.values():
 			elem.setStyleSheet("color: rgb(76,76,76);")
 
-		if start_row <= end_row and start_column <= end_column:
+		if start_row <= end_row and start_column <= end_column and start_depth <= self.model.current_depth and self.model.current_depth <= end_depth:
 			for i in range(start_row, end_row+1):
 				for j in range(start_column, end_column+1):
 					self.view.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")

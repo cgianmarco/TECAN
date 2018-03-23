@@ -34,12 +34,24 @@ class Tensor:
 		return self.data[self.current_time][self.current_depth]
 
 	def get_selected_matrix(self, selected):
-		start_row, end_row, start_column, end_column = selected
-		return self.data[self.current_time][self.current_depth][start_row:end_row+1, start_column:end_column+1]
+		start_row = selected['start_width']
+		end_row = selected['end_width']
+		start_column = selected['start_height']
+		end_column = selected['end_height']
+		start_depth = selected['start_depth']
+		end_depth = selected['end_depth']
+		# start_row, end_row, start_column, end_column = selected
+		return self.data[self.current_time][start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
 
 	def update_selected_matrix(self, result, selected):
-		start_row, end_row, start_column, end_column = selected
-		self.data[self.current_time][self.current_depth][start_row:end_row+1, start_column:end_column+1] = result
+		start_row = selected['start_width']
+		end_row = selected['end_width']
+		start_column = selected['start_height']
+		end_column = selected['end_height']
+		start_depth = selected['start_depth']
+		end_depth = selected['end_depth']
+		# start_row, end_row, start_column, end_column = selected
+		self.data[self.current_time][start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
 
 	def get_mean(self, selected):
 		return round(self.get_selected_matrix(selected).mean(), 4)

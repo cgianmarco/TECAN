@@ -13,7 +13,7 @@ class Stack():
         self.width_value = shape['width']
         self.height_value = shape['height']
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
-        self.selected, selection_layout = widgets.selectionGrid(self.width_value, self.height_value, changed_selection_action)
+        self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
         if self.depth > 1:
             self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
         else:
@@ -204,7 +204,15 @@ class View(QMainWindow):
                 self.datagrid[(i,j)].setText(str(value))
 
     def get_selected(self):
-        return [ int(elem.currentText()) for elem in self.selected ]
+        selected = {}
+        for dim in self.selected.keys():
+            if self.selected[dim] != None:
+                selected['start_' + dim] = int(self.selected[dim][0].currentText())
+                selected['end_' + dim] = int(self.selected[dim][1].currentText())
+            else:
+                selected['start_' + dim] = 0
+                selected['end_' + dim] = 0
+        return selected
 
     def update_control_value(self, value):
         if self.control_value is not None:

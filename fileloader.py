@@ -3,15 +3,17 @@ import numpy as np
 
 class FileLoader:
 	def __init__(self, filename):
-		self.doc = load_workbook(str(filename))['Result sheet']
+		self.doc = load_workbook(str(filename))
+		self.doc.guess_types = False
+		self.doc = self.doc['Result sheet']
 
 	def test(self):
 		pass
 
 	def parse(self):
 		data_starting_line = 35
-		wl_start = self.doc['E24'].value
-		wl_end = self.doc['E25'].value
+		wl_start = int(str(self.doc['E24'].value).replace('L', ''))
+		wl_end = int(str(self.doc['E25'].value).replace('L', ''))
 
 		depth = wl_end - wl_start
 		time = 1

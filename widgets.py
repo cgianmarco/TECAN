@@ -15,7 +15,6 @@ def listWidget():
 
 
 def selectionGrid(shape, changed_selection_action):
-        print(shape)
         # selector
         selectionGrid = QGridLayout()
         lFrom = QLabel('Da')

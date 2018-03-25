@@ -6,15 +6,20 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import widgets
 
+# TODO
+# def generate_layouts(self.shape, self.actions)
+# width_value to width
+
 class Stack():
     def __init__(self, shape, changed_selection_action, move_back_action, move_forward_action, text_changed_action):
         self.time = shape['time']
         self.depth = shape['depth']
         self.width_value = shape['width']
         self.height_value = shape['height']
+
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
-
+        # controlsBar should take depth instead
         # Add controlBar if depth > 1
         if self.depth > 1:
             self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
@@ -38,6 +43,13 @@ class Stack():
         for elem in self.datagrid.values():
             elem.setStyleSheet("color: rgb(76,76,76);")
 
+    def is_in_range(self, control_value, start, end):
+        if control_value is not None:
+            current = int(control_value.text())
+            return start <= current and current <= end
+        else: 
+            return True
+
     def update_datagrid_color(self, selected):
         start_row = selected['start_width']
         end_row = selected['end_width']
@@ -45,7 +57,7 @@ class Stack():
         end_column = selected['end_height']
         start_depth = selected['start_depth']
         end_depth = selected['end_depth']
-        if start_row <= end_row and start_column <= end_column and start_depth <= self.get_control_value() and self.get_control_value() <= end_depth:
+        if start_row <= end_row and start_column <= end_column and self.is_in_range(self.control_value, start_depth, end_depth):
             for i in range(start_row, end_row+1):
                 for j in range(start_column, end_column+1):
                     self.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")

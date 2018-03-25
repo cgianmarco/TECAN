@@ -53,9 +53,10 @@ class Controller:
 		
 
 	def tensor_load_action(self):
-		fileloader = FileLoader(self.view.get_file_name())
-		# fileloader = TwoDimFileLoader(self.view.get_file_name())
+		# fileloader = FileLoader(self.view.get_file_name())
+		fileloader = TwoDimFileLoader(self.view.get_file_name())
 		self.model.add_new_tensor(fileloader.parse())
+		print(self.view.get_selected())
 
 	def mean_action(self):
 		mean = self.model.get_mean(self.view.get_selected())

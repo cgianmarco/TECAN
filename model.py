@@ -2,16 +2,8 @@ import numpy as np
 
 class Tensor:
 	def __init__(self, ):
-		self.data = np.zeros((10,10,10,10))
-		self.wl_start = 0
-		self.wl_end = 0
-		self.depth = 0
-		self.time = 0
 		self.current_depth = 0
 		self.current_time = 0
-		self.width = 0
-		self.height = 0
-		self.selected = {}
 
 	def change_current_depth(self, value):
 		self.current_depth = value
@@ -30,6 +22,7 @@ class Tensor:
 		self.data = loadedfile['data']
 		self.width = loadedfile['width']
 		self.height = loadedfile['height']
+		self.selected = { 'start_width':0, 'end_width':0, 'start_height':0, 'end_height':0, 'start_depth':self.wl_start, 'end_depth':self.wl_start}
 
 	def get_current_matrix(self):
 		return self.data[self.current_time][self.current_depth]
@@ -72,8 +65,6 @@ class Tensor:
 		self.selected = selected
 
 
-
-
 class Model(object):
 	def __init__(self, listener):
 		tensor = Tensor()
@@ -95,6 +86,7 @@ class Model(object):
 		self.tensors[new_key].load(loadedfile)
 		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}})
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 		
 
 	def remove_tensor(self, key):

@@ -38,20 +38,20 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth']
-		end_depth = selected['end_depth']
+		start_depth = selected['start_depth'] - self.wl_start
+		end_depth = selected['end_depth'] - self.wl_start
 		# start_row, end_row, start_column, end_column = selected
-		return self.data[self.current_time][start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
+		return self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
 
 	def update_selected_matrix(self, result, selected):
 		start_row = selected['start_width']
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth']
-		end_depth = selected['end_depth']
+		start_depth = selected['start_depth'] - self.wl_start
+		end_depth = selected['end_depth'] - self.wl_start
 		# start_row, end_row, start_column, end_column = selected
-		self.data[self.current_time][start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
+		self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
 
 	def get_mean(self, selected):
 		return round(self.get_selected_matrix(selected).mean(), 4)
@@ -195,5 +195,8 @@ class Model(object):
 
 	def get_std(self, selected):
 		return self.get_current_tensor().get_std(selected)
+
+	def subtract(self, x, y):
+		return x - y
 
 	

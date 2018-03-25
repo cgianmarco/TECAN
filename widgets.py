@@ -31,7 +31,10 @@ def selectionGrid(shape, changed_selection_action):
             if shape[dim] > 1:
                 lDim = QLabel(dim.capitalize())
                 lDims.append(lDim)
-                optionsDim = [str(x) for x in range(shape[dim])]
+                if dim != 'depth':
+                    optionsDim = [str(x) for x in range(shape[dim])]
+                else:
+                    optionsDim = [str(x + 550) for x in range(shape[dim])]
 
                 leFromDim = QComboBox()
                 leFromDim.addItems(optionsDim)

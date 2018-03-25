@@ -63,6 +63,10 @@ class StackList():
         del self.stacks[key]
         self.values_widget.removeWidget(self.values_widget.widget(0))
         self.list_widget.takeItem(0)
+
+    def set_index(self, i):
+        self.values_widget.setCurrentIndex(i)
+        self.current_stack = "Matrix" + str(i)
        
 
 
@@ -120,6 +124,9 @@ class View(QMainWindow):
 
     def remove_stack(self, key):
         self.stack_list.remove_stack(key)
+
+    def set_stack_index(self, i):
+        self.stack_list.set_index(i)
 
     @property
     def stack(self):

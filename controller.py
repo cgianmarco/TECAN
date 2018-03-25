@@ -19,9 +19,7 @@ class Listener:
 
 	def on_changed_current_tensor(self, event):
 		i = event['i']
-		# Controller should not know about stack_list attribute
-		self.view.stack_list.values_widget.setCurrentIndex(i)
-		self.view.stack_list.current_stack = "Matrix" + str(i)
+		self.view.set_stack_index(i)
 
 
 
@@ -49,7 +47,6 @@ class Controller:
 		self.model.add_new_tensor(fileloader.parse())
 
 	def mean_action(self):
-		print(self.model.get_selected_matrix(self.view.get_selected()))
 		mean = self.model.get_mean(self.view.get_selected())
 		# This should change model only
 		# View should change through listener
@@ -64,8 +61,7 @@ class Controller:
 	def subtract_action(self):
 		v1 = self.model.get_selected_matrix(self.view.get_selected())
 		v2 = self.view.get_list_selected()
-		# Subtraction should be delegated to model
-		result = v1 - v2
+		result = self.model.subtract(v1, v2)
 		self.model.update_selected_matrix(result, self.view.get_selected())
 
 	def move_back_action(self):
@@ -95,8 +91,8 @@ class Controller:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth']
-		end_depth = selected['end_depth']
+		start_depth = selected['start_depth'] - self.model.wl_start
+		end_depth = selected['end_depth'] - self.model.wl_start
 		# start_row, end_row, start_column, end_column = [ elem for elem in self.view.get_selected()]
 		for elem in self.view.datagrid.values():
 			elem.setStyleSheet("color: rgb(76,76,76);")

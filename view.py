@@ -31,6 +31,26 @@ class Stack():
         layout.addStretch(1)
         self.stack_widget.setLayout(layout)
 
+    def get_control_value(self):
+        return int(self.control_value.text())
+
+    def clear_datagrid_color(self):
+        for elem in self.datagrid.values():
+            elem.setStyleSheet("color: rgb(76,76,76);")
+
+    def update_datagrid_color(self, selected):
+        start_row = selected['start_width']
+        end_row = selected['end_width']
+        start_column = selected['start_height']
+        end_column = selected['end_height']
+        start_depth = selected['start_depth']
+        end_depth = selected['end_depth']
+        if start_row <= end_row and start_column <= end_column and start_depth <= self.get_control_value() and self.get_control_value() <= end_depth:
+            for i in range(start_row, end_row+1):
+                for j in range(start_column, end_column+1):
+                    self.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
+
+
 def DEFAULT_ACTION(*args, **kwargs):
     raise NotImplementedError("Action not yet implemented")
 
@@ -127,6 +147,11 @@ class View(QMainWindow):
 
     def set_stack_index(self, i):
         self.stack_list.set_index(i)
+
+    def update_values_list(self, values):
+        self.listValue.clear()
+        for value in values:
+            self.listValue.addItem(value)
 
     @property
     def stack(self):
@@ -229,6 +254,15 @@ class View(QMainWindow):
 
     def get_list_selected(self):
         return float(str(self.listValue.currentItem().text()).split(" ")[1])
+
+    def get_control_value(self):
+        return self.stack.get_control_value()
+
+    def clear_datagrid_color(self):
+        self.stack.clear_datagrid_color()
+
+    def update_datagrid_color(self, selected):
+        self.stack.update_datagrid_color(selected)
 
 
 

@@ -21,6 +21,17 @@ class Listener:
 		i = event['i']
 		self.view.set_stack_index(i)
 
+	def on_values_list_changed(self, event):
+		values = event['values']
+		self.view.update_values_list(values)
+
+	def on_selected_changed(self, event):
+		self.view.clear_datagrid_color()
+		selected = event
+		self.view.update_datagrid_color(selected)
+
+
+
 
 
 class Controller:
@@ -48,15 +59,11 @@ class Controller:
 
 	def mean_action(self):
 		mean = self.model.get_mean(self.view.get_selected())
-		# This should change model only
-		# View should change through listener
-		self.view.listValue.addItem("Mean: " +  str(mean))
+		self.model.add_value("Mean: " +  str(mean))
 
 	def std_action(self):
 		std = self.model.get_std(self.view.get_selected())
-		# This should change model only
-		# View should change through listener
-		self.view.listValue.addItem("Std: " +  str(std))
+		self.model.add_value("Std: " +  str(std))
 
 	def subtract_action(self):
 		v1 = self.model.get_selected_matrix(self.view.get_selected())
@@ -67,40 +74,22 @@ class Controller:
 	def move_back_action(self):
 		if self.model.current_depth > 0:
 			self.model.change_current_depth(self.model.current_depth - 1)
-		self.changed_selection_action()
 
 	def move_forward_action(self):
 		if self.model.current_depth < self.model.depth - 1:
-			self.model.change_current_depth(self.model.current_depth + 1)	
-		self.changed_selection_action()	
+			self.model.change_current_depth(self.model.current_depth + 1)
 
 	def text_changed_action(self, text):
 		try:
 			value = int(text)
 			if self.model.wl_start <= value < self.model.wl_end:
 				self.model.change_current_depth(value - self.model.wl_start)
-			self.changed_selection_action()
 		except ValueError:
 			pass
 
 	def changed_selection_action(self):
-		# This should change selected in model
-		# Listener should have method onSelectedChange that changes view accordingly (?)
-		selected = self.view.get_selected()
-		start_row = selected['start_width']
-		end_row = selected['end_width']
-		start_column = selected['start_height']
-		end_column = selected['end_height']
-		start_depth = selected['start_depth'] - self.model.wl_start
-		end_depth = selected['end_depth'] - self.model.wl_start
-		# start_row, end_row, start_column, end_column = [ elem for elem in self.view.get_selected()]
-		for elem in self.view.datagrid.values():
-			elem.setStyleSheet("color: rgb(76,76,76);")
-
-		if start_row <= end_row and start_column <= end_column and start_depth <= self.model.current_depth and self.model.current_depth <= end_depth:
-			for i in range(start_row, end_row+1):
-				for j in range(start_column, end_column+1):
-					self.view.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
+		self.model.update_selected(self.view.get_selected())
+		print(self.view.get_selected())
 
 	def changed_stack_action(self, i):
 		self.model.change_current_tensor("Matrix" + str(i))

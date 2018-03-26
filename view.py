@@ -19,13 +19,7 @@ class Stack():
 
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
-        # controlsBar should take depth instead
-        # Add controlBar if depth > 1
-        if self.depth > 1:
-            self.control_value, control_layout = widgets.controlsBar(move_back_action, move_forward_action, text_changed_action)
-        else:
-            self.control_value = None
-            control_layout = None
+        self.control_value, control_layout = widgets.controlsBar(self.depth, move_back_action, move_forward_action, text_changed_action)
 
         layouts = [selection_layout, control_layout, grid_layout]
         self.stack_widget = QWidget()
@@ -137,11 +131,11 @@ class View(QMainWindow):
         vlayout = QVBoxLayout()
 
         self.stack_list = StackList()        
-        self.listValue, listWidget = widgets.listWidget()
+        self.listValue = widgets.listWidget()
 
         # Add Child Layouts
         vlayout.addLayout(self.stack_list.stack_layout)
-    	vlayout.addWidget(listWidget)
+    	vlayout.addWidget(self.listValue)
 
 
     	mainWidget = QWidget()

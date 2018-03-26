@@ -8,10 +8,9 @@ from PyQt4.QtCore import *
 def listWidget():
         listWidget = QListWidget()
         listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        listValue = listWidget
         listWidget.resize(300,120)
 
-        return listValue, listWidget
+        return listWidget
 
 
 def selectionGrid(shape, changed_selection_action):
@@ -150,7 +149,8 @@ def Grid(width, height):
 
 
 
-def controlsBar(move_back_action, move_forward_action, text_changed_action):
+def controlsBar(depth, move_back_action, move_forward_action, text_changed_action):
+    if depth > 1:
         # Controls
         controlGrid = QGridLayout()
 
@@ -167,6 +167,8 @@ def controlsBar(move_back_action, move_forward_action, text_changed_action):
         controlGrid.addWidget(leValue, 0,2)
         controlGrid.addWidget(bForward, 0,3)
         return control_value, controlGrid
+    else:
+        return None, None
 
 def newStack(layouts):
         # self.datagrid, grid_layout = widgets.Grid(self)

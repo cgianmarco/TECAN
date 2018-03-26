@@ -30,6 +30,27 @@ class Stack():
         layout.addStretch(1)
         self.stack_widget.setLayout(layout)
 
+    def update_grid(self, matrix):
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                value = matrix[i][j]
+                self.datagrid[(i,j)].setText(str(value))
+
+    def get_selected(self):
+        selected = {}
+        for dim in self.selected.keys():
+            if self.selected[dim] != None:
+                selected['start_' + dim] = int(self.selected[dim][0].currentText())
+                selected['end_' + dim] = int(self.selected[dim][1].currentText())
+            else:
+                selected['start_' + dim] = 0
+                selected['end_' + dim] = 0
+        return selected
+
+    def update_control_value(self, value):
+        if self.control_value is not None:
+            self.control_value.setText(str(value))
+
     def get_control_value(self):
         return int(self.control_value.text())
 
@@ -163,18 +184,7 @@ class View(QMainWindow):
     def stack(self):
         return self.stack_list.stacks[self.stack_list.current_stack]
 
-    @property
-    def datagrid(self):
-        return self.stack.datagrid
-
-    @property
-    def control_value(self):
-        return self.stack.control_value
-
-    @property
-    def selected(self):
-        return self.stack.selected
-
+    # View should not have access to these
     @property
     def width_value(self):
         return self.stack.width_value
@@ -190,11 +200,6 @@ class View(QMainWindow):
     @height_value.setter
     def height_value(self, value):
         self.stack.height_value = value
-
-
-    def set_dimensions(self, width, height):
-        self.width_value = width
-        self.height_value = height
 
     def get_file_name(self):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
@@ -238,26 +243,14 @@ class View(QMainWindow):
             self.std_action()
 
     def update_grid(self, matrix):
-        for i in range(len(matrix)):
-            for j in range(len(matrix[i])):
-                value = matrix[i][j]
-                self.datagrid[(i,j)].setText(str(value))
-
+        self.stack.update_grid(matrix)
+    
     def get_selected(self):
-        selected = {}
-        for dim in self.selected.keys():
-            if self.selected[dim] != None:
-                selected['start_' + dim] = int(self.selected[dim][0].currentText())
-                selected['end_' + dim] = int(self.selected[dim][1].currentText())
-            else:
-                selected['start_' + dim] = 0
-                selected['end_' + dim] = 0
-        return selected
-
+        return self.stack.get_selected()
+    
     def update_control_value(self, value):
-        if self.control_value is not None:
-            self.control_value.setText(str(value))
-
+        self.stack.update_control_value(value)
+    
     def get_list_selected(self):
         return float(str(self.listValue.currentItem().text()).split(" ")[1])
 

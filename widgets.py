@@ -146,27 +146,38 @@ def Grid(width, height):
 
 
 
+class controls_bar():
+    def __init__(self, dim):
+        self.dim = dim
+        self.layout = QGridLayout()
+        self.bBack = QPushButton('back')
+        self.bForward = QPushButton('forward')
+        self.leValue = QLineEdit()
+
+        self.leValue.setFixedWidth(50)
+
+        self.layout.addWidget(self.bBack, 0,1)
+        self.layout.addWidget(self.leValue, 0,2)
+        self.layout.addWidget(self.bForward, 0,3)
+
+    def connect(self, actions):
+        text_changed_action = actions['text_changed_action']
+        move_back_action = actions['move_back_action']
+        move_forward_action = actions['move_forward_action']
+
+        leValue.textChanged.connect(lambda : text_changed_action(self.dim))
+        bBack.clicked.connect(lambda : move_back_action(self.dim))
+        bForward.clicked.connect(lambda : move_forward_action(self.dim))
+
+    @property
+    def value(self):
+        return self.leValue
 
 
-
-def controlsBar(depth, move_back_action, move_forward_action, text_changed_action):
+def controlsBar(depth, dim, actions):
     if depth > 1:
-        # Controls
-        controlGrid = QGridLayout()
-
-        bBack = QPushButton('back')
-        bForward = QPushButton('forward')
-        bBack.clicked.connect(move_back_action)
-        bForward.clicked.connect(move_forward_action)
-        leValue = QLineEdit()
-        leValue.textChanged.connect(text_changed_action)
-        leValue.setFixedWidth(50)
-        control_value = leValue
-
-        controlGrid.addWidget(bBack, 0,1)
-        controlGrid.addWidget(leValue, 0,2)
-        controlGrid.addWidget(bForward, 0,3)
-        return control_value, controlGrid
+        controls_bar = controls_bar(dim)
+        return controls_bar.value, controls_bar.layout
     else:
         return None, None
 

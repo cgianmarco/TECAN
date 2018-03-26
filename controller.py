@@ -76,7 +76,8 @@ class Controller:
 		if self.model.current_depth > 0:
 			self.model.change_current_depth(self.model.current_depth - 1)
 
-	def move_forward_action(self):
+	def move_forward_action(self, button):
+		print(button.text())
 		if self.model.current_depth < self.model.depth - 1:
 			self.model.change_current_depth(self.model.current_depth + 1)
 

@@ -19,7 +19,16 @@ class Stack():
 
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
-        self.control_value, control_layout = widgets.controlsBar(self.depth, move_back_action, move_forward_action, text_changed_action)
+
+        # self.control_value = {}
+        if self.depth > 1:
+            control_bar = widgets.ControlBar('depth')
+            control_bar.connect(move_back_action, move_forward_action, text_changed_action)
+            self.control_value = control_bar.value
+            control_layout = control_bar.layout
+        else:
+            control_layout = None
+            self.control_value = None
 
         layouts = [selection_layout, control_layout, grid_layout]
         self.stack_widget = QWidget()

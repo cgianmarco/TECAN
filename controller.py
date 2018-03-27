@@ -15,7 +15,7 @@ class Listener:
 		wavelength = event['wavelength']
 		time = event['time']
 		self.view.update_grid(matrix)
-		self.view.update_control_value(wavelength)
+		self.view.update_control_value('depth', wavelength)
 
 	def on_changed_current_tensor(self, event):
 		i = event['i']

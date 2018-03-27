@@ -15,7 +15,8 @@ class Listener:
 		wavelength = event['wavelength']
 		time = event['time']
 		self.view.update_grid(matrix)
-		self.view.update_control_value(wavelength)
+		self.view.update_control_value('depth', wavelength)
+		self.view.update_control_value('time', time)
 
 	def on_changed_current_tensor(self, event):
 		i = event['i']
@@ -72,13 +73,22 @@ class Controller:
 		result = self.model.subtract(v1, v2)
 		self.model.update_selected_matrix(result, self.view.get_selected())
 
-	def move_back_action(self):
-		if self.model.current_depth > 0:
-			self.model.change_current_depth(self.model.current_depth - 1)
+	def move_back_action(self, dim):
+		if dim == 'depth':
+			if self.model.current_depth > 0:
+				self.model.change_current_depth(self.model.current_depth - 1)
+		if dim == 'time':
+			if self.model.current_time > 0:
+				self.model.change_current_time(self.model.current_time - 1)
 
-	def move_forward_action(self):
-		if self.model.current_depth < self.model.depth - 1:
-			self.model.change_current_depth(self.model.current_depth + 1)
+	def move_forward_action(self, dim):
+		
+		if dim == 'depth':
+			if self.model.current_depth < self.model.depth - 1:
+				self.model.change_current_depth(self.model.current_depth + 1)
+		if dim == 'time':
+			if self.model.current_time < self.model.time - 1:
+				self.model.change_current_time(self.model.current_time + 1)
 
 	def text_changed_action(self, text):
 		try:

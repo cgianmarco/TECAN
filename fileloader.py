@@ -30,6 +30,19 @@ class FileLoader:
 			width = 8
 			height = 8
 			data = np.array(result).reshape([1, depth, width, height])
+
+		elif self.filename == '/home/gianmarco/Desktop/200 ul.xlsx':
+			data_starting_line = 35
+			wl_start = int(str(self.doc['E24'].value).replace('L', ''))
+			wl_end = int(str(self.doc['E25'].value).replace('L', ''))
+
+			depth = wl_end - wl_start
+			time = 10
+			width = 8
+			height = 8
+
+			data = np.zeros((time, depth, width, height))
+
 		else:
 			data_starting_line = 35
 			wl_start = 0

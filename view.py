@@ -19,9 +19,9 @@ class Stack():
 
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
-        self.control_value, control_layout = widgets.controlsBar(self.depth, move_back_action, move_forward_action, text_changed_action)
+        self.add_control_bars([('time', self.time), ('depth', self.depth)], move_back_action, move_forward_action, text_changed_action)
 
-        layouts = [selection_layout, control_layout, grid_layout]
+        layouts = [selection_layout, self.control_layout['depth'], self.control_layout['time'], grid_layout]
         self.stack_widget = QWidget()
         layout = QVBoxLayout()
         for childLayout in layouts:
@@ -29,6 +29,21 @@ class Stack():
                 layout.addLayout(childLayout)
         layout.addStretch(1)
         self.stack_widget.setLayout(layout)
+
+    def add_control_bars(self, dims, move_back_action, move_forward_action, text_changed_action):
+        self.control_value = {}
+        self.control_layout = {}
+        for dim in dims:
+            name = dim[0]
+            value = dim[1]
+            if value > 1:
+                control_bar = widgets.ControlBar(name)
+                control_bar.connect(move_back_action, move_forward_action, text_changed_action)
+                self.control_value[name] = control_bar.value
+                self.control_layout[name] = control_bar.layout
+            else:
+                self.control_value[name] = None
+                self.control_layout[name] = None
 
     def update_grid(self, matrix):
         for i in range(len(matrix)):
@@ -47,20 +62,20 @@ class Stack():
                 selected['end_' + dim] = 0
         return selected
 
-    def update_control_value(self, value):
-        if self.control_value is not None:
-            self.control_value.setText(str(value))
+    def update_control_value(self, dim, value):
+        if self.control_value[dim] is not None:
+            self.control_value[dim].setText(str(value))
 
-    def get_control_value(self):
-        return int(self.control_value.text())
+    def get_control_value(self, dim):
+        return int(self.control_value[dim].text())
 
     def clear_datagrid_color(self):
         for elem in self.datagrid.values():
             elem.setStyleSheet("color: rgb(76,76,76);")
 
-    def is_in_range(self, control_value, start, end):
-        if control_value is not None:
-            current = int(control_value.text())
+    def is_in_range(self, dim, start, end):
+        if self.control_value[dim] is not None:
+            current = self.get_control_value(dim)
             return start <= current and current <= end
         else: 
             return True
@@ -72,7 +87,10 @@ class Stack():
         end_column = selected['end_height']
         start_depth = selected['start_depth']
         end_depth = selected['end_depth']
-        if start_row <= end_row and start_column <= end_column and self.is_in_range(self.control_value, start_depth, end_depth):
+        start_time = selected['start_time']
+        end_time = selected['end_time']
+
+        if start_row <= end_row and start_column <= end_column and self.is_in_range('depth', start_depth, end_depth) and self.is_in_range('time', start_time, end_time):
             for i in range(start_row, end_row+1):
                 for j in range(start_column, end_column+1):
                     self.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
@@ -248,14 +266,14 @@ class View(QMainWindow):
     def get_selected(self):
         return self.stack.get_selected()
     
-    def update_control_value(self, value):
-        self.stack.update_control_value(value)
+    def update_control_value(self, dim, value):
+        self.stack.update_control_value(dim, value)
     
     def get_list_selected(self):
         return float(str(self.listValue.currentItem().text()).split(" ")[1])
 
-    def get_control_value(self):
-        return self.stack.get_control_value()
+    def get_control_value(self, dim):
+        return self.stack.get_control_value(dim)
 
     def clear_datagrid_color(self):
         self.stack.clear_datagrid_color()

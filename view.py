@@ -21,16 +21,27 @@ class Stack():
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
 
         self.control_value = {}
+        self.control_layout = {}
+
         if self.depth > 1:
             control_bar = widgets.ControlBar('depth')
             control_bar.connect(move_back_action, move_forward_action, text_changed_action)
             self.control_value['depth'] = control_bar.value
-            control_layout = control_bar.layout
+            self.control_layout['depth'] = control_bar.layout
         else:
-            control_layout = None
+            self.control_layout['depth'] = None
             self.control_value['depth'] = None
 
-        layouts = [selection_layout, control_layout, grid_layout]
+        if self.time > 1:
+            control_bar = widgets.ControlBar('time')
+            control_bar.connect(move_back_action, move_forward_action, text_changed_action)
+            self.control_value['time'] = control_bar.value
+            self.control_layout['time'] = control_bar.layout
+        else:
+            self.control_layout['time'] = None
+            self.control_value['time'] = None
+
+        layouts = [selection_layout, self.control_layout['depth'], self.control_layout['time'], grid_layout]
         self.stack_widget = QWidget()
         layout = QVBoxLayout()
         for childLayout in layouts:
@@ -81,7 +92,10 @@ class Stack():
         end_column = selected['end_height']
         start_depth = selected['start_depth']
         end_depth = selected['end_depth']
-        if start_row <= end_row and start_column <= end_column and self.is_in_range('depth', start_depth, end_depth):
+        start_time = selected['start_time']
+        end_time = selected['end_time']
+
+        if start_row <= end_row and start_column <= end_column and self.is_in_range('depth', start_depth, end_depth) and self.is_in_range('time', start_time, end_time):
             for i in range(start_row, end_row+1):
                 for j in range(start_column, end_column+1):
                     self.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")

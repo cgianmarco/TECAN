@@ -22,7 +22,7 @@ class Tensor:
 		self.data = loadedfile['data']
 		self.width = loadedfile['width']
 		self.height = loadedfile['height']
-		self.selected = { 'start_width':0, 'end_width':0, 'start_height':0, 'end_height':0, 'start_depth':self.wl_start, 'end_depth':self.wl_start}
+		self.selected = { 'start_width':0, 'end_width':0, 'start_height':0, 'end_height':0, 'start_depth':self.wl_start, 'end_depth':self.wl_start, 'start_time':0, 'end_time':0}
 
 	def get_current_matrix(self):
 		return self.data[self.current_time][self.current_depth]
@@ -38,6 +38,8 @@ class Tensor:
 		end_column = selected['end_height']
 		start_depth = selected['start_depth'] - self.wl_start
 		end_depth = selected['end_depth'] - self.wl_start
+		start_time = selected['start_time']
+		end_time = selected['end_time']
 		return self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
 
 	def update_selected_matrix(self, result, selected):
@@ -47,6 +49,8 @@ class Tensor:
 		end_column = selected['end_height']
 		start_depth = selected['start_depth'] - self.wl_start
 		end_depth = selected['end_depth'] - self.wl_start
+		start_time = selected['start_time']
+		end_time = selected['end_time']
 		self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
 
 	def get_mean(self, selected):
@@ -119,6 +123,10 @@ class Model(object):
 	@property
 	def current_depth(self):
 		return self.get_current_tensor().current_depth
+
+	@property
+	def current_time(self):
+		return self.get_current_tensor().current_time
 
 	@property
 	def width(self):

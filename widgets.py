@@ -160,9 +160,9 @@ class ControlBar():
         self.layout.addWidget(self.bForward, 0,3)
 
     def connect(self, move_back_action, move_forward_action, text_changed_action):
-        self.bBack.clicked.connect(move_back_action)
-        self.bForward.clicked.connect(move_forward_action)
-        self.leValue.textChanged.connect(text_changed_action)
+        self.bBack.clicked.connect(lambda : move_back_action(self.dim))
+        self.bForward.clicked.connect(lambda : move_forward_action(self.dim))
+        self.leValue.textChanged.connect(lambda : text_changed_action(self.dim))
 
     @property
     def value(self):

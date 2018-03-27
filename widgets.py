@@ -170,15 +170,6 @@ class ControlBar():
 
 
 
-def controlsBar(depth, move_back_action, move_forward_action, text_changed_action):
-    if depth > 1:
-        # Controls
-        control_bar = ControlBar('depth')
-        control_bar.connect(move_back_action, move_forward_action, text_changed_action)
-        return control_bar.value, control_bar.layout
-    else:
-        return None, None
-
 def newStack(layouts):
         # self.datagrid, grid_layout = widgets.Grid(self)
         # self.selected, selection_layout = widgets.selectionGrid(self)

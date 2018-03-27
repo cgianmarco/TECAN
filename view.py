@@ -19,27 +19,7 @@ class Stack():
 
         self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
         self.selected, selection_layout = widgets.selectionGrid(shape, changed_selection_action)
-
-        self.control_value = {}
-        self.control_layout = {}
-
-        if self.depth > 1:
-            control_bar = widgets.ControlBar('depth')
-            control_bar.connect(move_back_action, move_forward_action, text_changed_action)
-            self.control_value['depth'] = control_bar.value
-            self.control_layout['depth'] = control_bar.layout
-        else:
-            self.control_layout['depth'] = None
-            self.control_value['depth'] = None
-
-        if self.time > 1:
-            control_bar = widgets.ControlBar('time')
-            control_bar.connect(move_back_action, move_forward_action, text_changed_action)
-            self.control_value['time'] = control_bar.value
-            self.control_layout['time'] = control_bar.layout
-        else:
-            self.control_layout['time'] = None
-            self.control_value['time'] = None
+        self.add_control_bars([('time', self.time), ('depth', self.depth)], move_back_action, move_forward_action, text_changed_action)
 
         layouts = [selection_layout, self.control_layout['depth'], self.control_layout['time'], grid_layout]
         self.stack_widget = QWidget()
@@ -49,6 +29,21 @@ class Stack():
                 layout.addLayout(childLayout)
         layout.addStretch(1)
         self.stack_widget.setLayout(layout)
+
+    def add_control_bars(self, dims, move_back_action, move_forward_action, text_changed_action):
+        self.control_value = {}
+        self.control_layout = {}
+        for dim in dims:
+            name = dim[0]
+            value = dim[1]
+            if value > 1:
+                control_bar = widgets.ControlBar(name)
+                control_bar.connect(move_back_action, move_forward_action, text_changed_action)
+                self.control_value[name] = control_bar.value
+                self.control_layout[name] = control_bar.layout
+            else:
+                self.control_value[name] = None
+                self.control_layout[name] = None
 
     def update_grid(self, matrix):
         for i in range(len(matrix)):

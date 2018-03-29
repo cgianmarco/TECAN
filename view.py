@@ -252,13 +252,13 @@ class View(QMainWindow):
 
     def process_trigger(self, q):
         if q.text() == 'Load Matrix':
-            self.tensor_load_action()
+            self.tensor_load_action(self.get_file_name())
         elif q.text() == 'Mean':
-            self.mean_action()
+            self.mean_action(self.get_selected())
         elif q.text() == 'Value from Selected':
-            self.subtract_action()
+            self.subtract_action(self.get_selected(), self.get_list_selected())
         elif q.text() == 'Standard deviation':
-            self.std_action()
+            self.std_action(self.get_selected())
 
     def update_grid(self, matrix):
         self.stack.update_grid(matrix)

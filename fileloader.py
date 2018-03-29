@@ -38,7 +38,7 @@ class FileLoader:
 
 			depth = wl_end - wl_start
 			time = 10
-			width = 8
+			width = 12
 			height = 8
 
 			data = np.zeros((time, depth, width, height))
@@ -82,7 +82,7 @@ class TwoDimFileLoader:
 		row = list(self.doc[data_starting_line])
 		result.append([ cell.value for cell in row[1:] ])
 
-		width = 8
+		width = 12
 		height = 8
 		data = np.array(result).reshape([1, depth, width, height])
 		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}

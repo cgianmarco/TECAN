@@ -52,21 +52,23 @@ class Controller:
 		# self.view.changed_stack_action(1)
 		# self.view.stackList.currentRowChanged.connect(self.changed_stack_action)
 		
-
+	#This should be tensor_load_action(self, filename)
 	def tensor_load_action(self):
 		fileloader = FileLoader(self.view.get_file_name())
 		# fileloader = TwoDimFileLoader(self.view.get_file_name())
 		self.model.add_new_tensor(fileloader.parse())
-		print(self.view.get_selected())
 
+	# This should be method(selected)
 	def mean_action(self):
 		mean = self.model.get_mean(self.view.get_selected())
 		self.model.add_value("Mean: " +  str(mean))
 
+	# This should be method(selected)
 	def std_action(self):
 		std = self.model.get_std(self.view.get_selected())
 		self.model.add_value("Std: " +  str(std))
 
+	# This should be subtract_action(selected, selected_value)
 	def subtract_action(self):
 		v1 = self.model.get_selected_matrix(self.view.get_selected())
 		v2 = self.view.get_list_selected()
@@ -100,7 +102,6 @@ class Controller:
 
 	def changed_selection_action(self):
 		self.model.update_selected(self.view.get_selected())
-		print(self.view.get_selected())
 
 	def changed_stack_action(self, i):
 		self.model.change_current_tensor("Matrix" + str(i))

@@ -70,20 +70,30 @@ class TwoDimFileLoader:
 		pass
 
 	def parse(self):
-		data_starting_line = 35
+		data_starting_line = 32
 		wl_start = 0
 		wl_end = 0
 
 		depth = 1
 		time = 1
 
+		def filter_empty(value):
+			if value == '':
+				return 0.0
+			else:
+				return value
+
 		# Get values
 		result = []
-		row = list(self.doc[data_starting_line])
-		result.append([ cell.value for cell in row[1:] ])
+		for line in range(data_starting_line + 1, data_starting_line + 9):
+			row = list(self.doc[line])
+			result.append([ filter_empty(cell.value) for cell in row[1:] ])
 
 		width = 12
 		height = 8
-		data = np.array(result).reshape([1, depth, width, height])
+		data = np.array(result)
+		data = np.expand_dims(data, axis=0)
+		data = np.expand_dims(data, axis=0)
+		print(data)
 		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}
 

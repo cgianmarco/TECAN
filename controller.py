@@ -42,7 +42,7 @@ class ViewListener():
 
 	def on_tensor_load(self, filename):
 		fileloader = FileLoader(filename)
-		# fileloader = TwoDimFileLoader(self.view.get_file_name())
+		# fileloader = TwoDimFileLoader(filename)
 		self.model.add_new_tensor(fileloader.parse())
 
 	def on_mean_action(self, selected):

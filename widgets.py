@@ -23,19 +23,19 @@ class Grid:
             newButton = QLabel(str(i))
             newButton.setAlignment(Qt.AlignHCenter)
             newButton.setFixedWidth(60)
-            self.layout.addWidget(newButton, i+1, 0)
+            self.layout.addWidget(newButton, 0, i+1)
 
         for j in range(height):
             newButton = QLabel(str(j))
             newButton.setFixedWidth(20)
-            self.layout.addWidget(newButton, 0, j+1)
+            self.layout.addWidget(newButton, j+1, 0)
 
-        for i in range(width):
-            for j in range(height):
+        for i in range(height):
+            for j in range(width):
                 newLineEdit = QLineEdit()
                 newLineEdit.setFixedWidth(60)
 
-                self.datagrid[(i,j)] = newLineEdit
+                self.datagrid[(i, j)] = newLineEdit
                 self.layout.addWidget(newLineEdit, i+1, j+1)
 
         stretch = QHBoxLayout()

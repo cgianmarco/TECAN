@@ -17,7 +17,7 @@ class Stack():
         self.width_value = shape['width']
         self.height_value = shape['height']
 
-        self.datagrid, self.grid_layout = widgets.Grid(self.width_value, self.height_value)
+        self.grid = widgets.Grid(self.width_value, self.height_value)
 
         self.selection_grid = widgets.SelectionGrid(shape)
         self.selection_grid.connect(listener)
@@ -32,10 +32,6 @@ class Stack():
             self.control_bar['time'] = widgets.ControlBar('time')
             self.control_bar['time'].connect(listener)
 
-
-        # self.add_control_bars([('time', self.time), ('depth', self.depth)], listener)
-
-        # layouts = [self.selection_grid.layout, self.control_bar['depth'].layout, self.control_bar['time'].layout, grid_layout]
         self.stack_widget = QWidget()
         self.layout = QVBoxLayout()
 
@@ -52,28 +48,13 @@ class Stack():
             yield self.control_bar['depth'].layout
         if 'time' in self.control_bar:
             yield self.control_bar['time'].layout
-        yield self.grid_layout
-
-    # def add_control_bars(self, dims, listener):
-    #     self.control_value = {}
-    #     self.control_layout = {}
-    #     for dim in dims:
-    #         name = dim[0]
-    #         value = dim[1]
-    #         if value > 1:
-    #             control_bar = widgets.ControlBar(name)
-    #             control_bar.connect(listener)
-    #             self.control_value[name] = control_bar.value
-    #             self.control_layout[name] = control_bar.layout
-    #         else:
-    #             self.control_value[name] = None
-    #             self.control_layout[name] = None
+        yield self.grid.layout
 
     def update_grid(self, matrix):
         for i in range(len(matrix)):
             for j in range(len(matrix[i])):
                 value = matrix[i][j]
-                self.datagrid[(i,j)].setText(str(value))
+                self.grid.datagrid[(i,j)].setText(str(value))
 
     def get_selected(self):
         return self.selection_grid.get_selected()
@@ -86,7 +67,7 @@ class Stack():
         return int(self.control_bar[dim].value.text())
 
     def clear_datagrid_color(self):
-        for elem in self.datagrid.values():
+        for elem in self.grid.datagrid.values():
             elem.setStyleSheet("color: rgb(76,76,76);")
 
     def is_in_range(self, dim, start, end):
@@ -109,7 +90,7 @@ class Stack():
         if start_row <= end_row and start_column <= end_column and self.is_in_range('depth', start_depth, end_depth) and self.is_in_range('time', start_time, end_time):
             for i in range(start_row, end_row+1):
                 for j in range(start_column, end_column+1):
-                    self.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
+                    self.grid.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
 
 
 def DEFAULT_ACTION(*args, **kwargs):
@@ -127,20 +108,6 @@ class View(QMainWindow):
         # self.init_listeners()
         self.init_menu_bar()
         self.init_ui()
-
-    # def init_listeners(self):
-    #     self.tensor_load_action = DEFAULT_ACTION
-    #     self.mean_action = DEFAULT_ACTION
-    #     self.std_action = DEFAULT_ACTION
-
-    #     # Listeners
-    #     self.subtract_action = DEFAULT_ACTION
-    #     self.move_back_action = DEFAULT_ACTION
-    #     self.move_forward_action = DEFAULT_ACTION
-    #     self.text_changed_action = DEFAULT_ACTION
-    #     self.changed_selection_action = DEFAULT_ACTION
-    #     self.changed_stack_action = DEFAULT_ACTION
-
 
 
     def init_menu_bar(self):

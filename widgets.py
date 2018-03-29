@@ -90,6 +90,36 @@ def Grid(width, height):
 
         return datagrid, grid
 
+class Grid:
+    def __init__(self, width, height):
+        self.datagrid = {}
+        self.layout = QGridLayout()
+        self.layout.setSpacing(0)
+
+        for i in range(width):
+            newButton = QLabel(str(i))
+            newButton.setAlignment(Qt.AlignHCenter)
+            newButton.setFixedWidth(60)
+            self.layout.addWidget(newButton, i+1, 0)
+
+        for j in range(height):
+            newButton = QLabel(str(j))
+            newButton.setFixedWidth(20)
+            self.layout.addWidget(newButton, 0, j+1)
+
+        for i in range(width):
+            for j in range(height):
+                newLineEdit = QLineEdit()
+                newLineEdit.setFixedWidth(60)
+
+                self.datagrid[(i,j)] = newLineEdit
+                self.layout.addWidget(newLineEdit, i+1, j+1)
+
+        stretch = QHBoxLayout()
+        stretch.addStretch(1)
+        self.layout.addLayout(stretch, 0, height + 2)
+
+
 class SelectionGrid():
     def __init__(self, shape):
         # selector

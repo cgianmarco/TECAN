@@ -134,14 +134,14 @@ class View(QMainWindow):
         self.last_index = -1
         
 
-        self.list_widget, self.values_widget, self.stack_layout = widgets.stackLayout()
-        self.list_widget.currentRowChanged.connect(self.listener.on_changed_stack)    
+        self.stack_container = widgets.StackContainer()
+        self.stack_container.list_widget.currentRowChanged.connect(self.listener.on_changed_stack)    
         self.listValue = widgets.listWidget()
 
 
 
         # Add Child Layouts
-        vlayout.addLayout(self.stack_layout)
+        vlayout.addLayout(self.stack_container.layout)
     	vlayout.addWidget(self.listValue)
 
 
@@ -156,17 +156,16 @@ class View(QMainWindow):
         self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
         self.stacks[new_key] = Stack(shape, self.listener)
-        self.values_widget.addWidget(self.stacks[new_key].stack_widget)
-        self.list_widget.addItem(new_key)
+        self.stack_container.add_stack(new_key, self.stacks[new_key].stack_widget)
         self.current_stack = new_key
 
     def remove_stack(self, key):
         del self.stacks[key]
-        self.values_widget.removeWidget(self.values_widget.widget(0))
-        self.list_widget.takeItem(0)
+        self.stack_container.stacks_widget.removeWidget(self.values_widget.widget(0))
+        self.stack_container.list_widget.takeItem(0)
 
     def set_stack_index(self, i):
-        self.values_widget.setCurrentIndex(i)
+        self.stack_container.stacks_widget.setCurrentIndex(i)
         self.current_stack = "Matrix" + str(i)
 
     def update_values_list(self, values):
@@ -197,34 +196,6 @@ class View(QMainWindow):
 
     def get_file_name(self):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
-
-    def add_tensor_load_action(self, action):
-        self.tensor_load_action = action
-
-    def add_mean_action(self, action):
-        self.mean_action = action
-
-    def add_std_action(self, action):
-        self.std_action = action
-
-    def add_subtract_action(self, action):
-        self.subtract_action = action
-
-    def add_move_back_action(self, action):
-        self.move_back_action = action
-
-    def add_move_forward_action(self, action):
-        self.move_forward_action = action
-
-    def add_text_changed_action(self, action):
-        self.text_changed_action = action
-
-    def add_changed_selection_action(self, action):
-        self.changed_selection_action = action
-
-    def add_changed_stack_action(self, action):
-        self.changed_stack_action = action
-        self.list_widget.currentRowChanged.connect(action)
 
     def process_trigger(self, q):
         if q.text() == 'Load Matrix':

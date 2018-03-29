@@ -224,3 +224,15 @@ def stackLayout():
     hbox.addWidget(stack)
 
     return stacklist, stack, hbox
+
+class StackContainer():
+    def __init__(self):
+        self.list_widget = QListWidget ()        
+        self.stacks_widget = QStackedWidget()
+        self.layout = QHBoxLayout()
+        self.layout.addWidget(self.list_widget)
+        self.layout.addWidget(self.stacks_widget)
+
+    def add_stack(self, key, stack_widget):
+        self.stacks_widget.addWidget(stack_widget)
+        self.list_widget.addItem(key)

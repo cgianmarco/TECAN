@@ -152,10 +152,10 @@ class View(QMainWindow):
         self.setWindowTitle('TECAN Reader')
         self.show()
 
-    def add_new_stack(self, shape):
+    def add_new_stack(self, shape, listener):
         self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
-        self.stacks[new_key] = Stack(shape, self.listener)
+        self.stacks[new_key] = Stack(shape, listener)
         self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
         self.current_stack = new_key
 

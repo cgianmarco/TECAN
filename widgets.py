@@ -13,83 +13,6 @@ def listWidget():
         return listWidget
 
 
-def selectionGrid(shape, parent, listener):
-        # selector
-        selectionGrid = QGridLayout()
-        lFrom = QLabel('Da')
-        lTo = QLabel('A')
-
-        lFrom.setFixedWidth(20)
-        lTo.setFixedWidth(20)
-
-        selected = []
-        lDims = []
-        selection = {}
-        for dim in shape.keys():
-            if shape[dim] > 1:
-                lDim = QLabel(dim.capitalize())
-                lDims.append(lDim)
-                if dim != 'depth':
-                    optionsDim = [str(x) for x in range(shape[dim])]
-                else:
-                    optionsDim = [str(x + 550) for x in range(shape[dim])]
-
-                leFromDim = QComboBox()
-                leFromDim.addItems(optionsDim)
-
-                leToDim = QComboBox()
-                leToDim.addItems(optionsDim)
-
-                selected.extend([leFromDim, leToDim])
-                selection[dim] = (leFromDim, leToDim)
-                leFromDim.activated.connect(lambda : listener.on_changed_selection(parent.get_selected()))
-                leToDim.activated.connect(lambda : listener.on_changed_selection(parent.get_selected()))
-            else:
-                selection[dim] = None
-
-
-        for i in range(len(lDims)):
-            selectionGrid.addWidget(lDims[i], 0, i+1)
-
-        for j in range((len(selected)/2)):
-            selectionGrid.addWidget(selected[2*j], 1, j+1)
-            selectionGrid.addWidget(selected[2*j+1], 2, j+1)
-
-        selectionGrid.addWidget(lFrom, 1,0)
-        selectionGrid.addWidget(lTo, 2,0)
-
-        return selection, selectionGrid
-
-def Grid(width, height):
-        datagrid = {}
-        grid = QGridLayout()
-        grid.setSpacing(0)
-
-        for i in range(width):
-            newButton = QLabel(str(i))
-            newButton.setAlignment(Qt.AlignHCenter)
-            newButton.setFixedWidth(60)
-            grid.addWidget(newButton, i+1, 0)
-
-        for j in range(height):
-            newButton = QLabel(str(j))
-            newButton.setFixedWidth(20)
-            grid.addWidget(newButton, 0, j+1)
-
-        for i in range(width):
-            for j in range(height):
-                newLineEdit = QLineEdit()
-                newLineEdit.setFixedWidth(60)
-
-                datagrid[(i,j)] = newLineEdit
-                grid.addWidget(newLineEdit, i+1, j+1)
-
-        stretch = QHBoxLayout()
-        stretch.addStretch(1)
-        grid.addLayout(stretch, 0, height + 2)
-
-        return datagrid, grid
-
 class Grid:
     def __init__(self, width, height):
         self.datagrid = {}
@@ -207,23 +130,6 @@ class ControlBar():
         return self.leValue
 
 
-
-def newStack(layouts):
-        stack = QWidget()
-        layout = QVBoxLayout()
-        for childLayout in layouts:
-            layout.addLayout(childLayout)
-        stack.setLayout(layout)
-        return stack
-
-def stackLayout():
-    stacklist = QListWidget ()        
-    stack = QStackedWidget()
-    hbox = QHBoxLayout()
-    hbox.addWidget(stacklist)
-    hbox.addWidget(stack)
-
-    return stacklist, stack, hbox
 
 class StackContainer():
     def __init__(self):

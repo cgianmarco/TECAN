@@ -7,10 +7,9 @@ from controller import Controller
 
 def main():
 	app = QApplication(sys.argv)
-	theView = View()
 
-	theController = Controller(theView)
-	theView.show()
+	theController = Controller()
+	theController.view.show()
 	sys.exit(app.exec_())
 
 if __name__ == '__main__':

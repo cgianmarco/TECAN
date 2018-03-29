@@ -13,7 +13,7 @@ def listWidget():
         return listWidget
 
 
-def selectionGrid(shape, changed_selection_action):
+def selectionGrid(shape, parent, listener):
         # selector
         selectionGrid = QGridLayout()
         lFrom = QLabel('Da')
@@ -42,8 +42,8 @@ def selectionGrid(shape, changed_selection_action):
 
                 selected.extend([leFromDim, leToDim])
                 selection[dim] = (leFromDim, leToDim)
-                leFromDim.activated.connect(changed_selection_action)
-                leToDim.activated.connect(changed_selection_action)
+                leFromDim.activated.connect(lambda : listener.on_changed_selection(parent.get_selected()))
+                leToDim.activated.connect(lambda : listener.on_changed_selection(parent.get_selected()))
             else:
                 selection[dim] = None
 
@@ -107,10 +107,10 @@ class ControlBar():
         self.layout.addWidget(self.leValue, 0,2)
         self.layout.addWidget(self.bForward, 0,3)
 
-    def connect(self, move_back_action, move_forward_action, text_changed_action):
-        self.bBack.clicked.connect(lambda : move_back_action(self.dim))
-        self.bForward.clicked.connect(lambda : move_forward_action(self.dim))
-        self.leValue.textChanged.connect(lambda : text_changed_action(self.dim))
+    def connect(self, listener):
+        self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))
+        self.bForward.clicked.connect(lambda : listener.on_move_forward(self.dim))
+        self.leValue.textChanged.connect(lambda : listener.on_text_changed(self.dim))
 
     @property
     def value(self):

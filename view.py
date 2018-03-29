@@ -137,8 +137,9 @@ class StackList():
 
 class View(QMainWindow):
     
-    def __init__(self, parent=None):
+    def __init__(self, listener, parent=None):
         super(View, self).__init__(parent)
+        self.listener = listener
         self.init_listeners()
         self.init_menu_bar()
         self.init_ui()
@@ -223,16 +224,16 @@ class View(QMainWindow):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
 
     def add_tensor_load_action(self, action):
-        self.tensor_load_action = action
+        self.listener.on_tensor_load_action = action
 
     def add_mean_action(self, action):
-        self.mean_action = action
+        self.listener.on_mean_action = action
 
     def add_std_action(self, action):
-        self.std_action = action
+        self.listener.on_std_action = action
 
     def add_subtract_action(self, action):
-        self.subtract_action = action
+        self.listener.on_subtract_action = action
 
     def add_move_back_action(self, action):
         self.stack_list.move_back_action = action
@@ -252,13 +253,13 @@ class View(QMainWindow):
 
     def process_trigger(self, q):
         if q.text() == 'Load Matrix':
-            self.tensor_load_action()
+            self.listener.on_tensor_load_action()
         elif q.text() == 'Mean':
-            self.mean_action()
+            self.listener.on_mean_action()
         elif q.text() == 'Value from Selected':
-            self.subtract_action()
+            self.listener.on_subtract_action()
         elif q.text() == 'Standard deviation':
-            self.std_action()
+            self.listener.on_std_action()
 
     def update_grid(self, matrix):
         self.stack.update_grid(matrix)

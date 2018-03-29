@@ -177,23 +177,6 @@ class View(QMainWindow):
     def stack(self):
         return self.stacks[self.current_stack]
 
-    # View should not have access to these
-    @property
-    def width_value(self):
-        return self.stack.width_value
-
-    @property
-    def height_value(self):
-        return self.stack.height_value
-
-    @width_value.setter
-    def width_value(self, value):
-        self.stack.width_value = value
-
-    @height_value.setter
-    def height_value(self, value):
-        self.stack.height_value = value
-
     def get_file_name(self):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
 

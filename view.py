@@ -17,33 +17,57 @@ class Stack():
         self.width_value = shape['width']
         self.height_value = shape['height']
 
-        self.datagrid, grid_layout = widgets.Grid(self.width_value, self.height_value)
-        self.selected, selection_layout = widgets.selectionGrid(shape, self, listener)
-        self.add_control_bars([('time', self.time), ('depth', self.depth)], listener)
+        self.datagrid, self.grid_layout = widgets.Grid(self.width_value, self.height_value)
 
-        layouts = [selection_layout, self.control_layout['depth'], self.control_layout['time'], grid_layout]
+        self.selection_grid = widgets.SelectionGrid(shape)
+        self.selection_grid.connect(listener)
+
+        self.control_bar = {}
+
+        if self.depth > 1:
+            self.control_bar['depth'] = widgets.ControlBar('depth')
+            self.control_bar['depth'].connect(listener)
+
+        if self.time > 1:
+            self.control_bar['time'] = widgets.ControlBar('time')
+            self.control_bar['time'].connect(listener)
+
+
+        # self.add_control_bars([('time', self.time), ('depth', self.depth)], listener)
+
+        # layouts = [self.selection_grid.layout, self.control_bar['depth'].layout, self.control_bar['time'].layout, grid_layout]
         self.stack_widget = QWidget()
-        layout = QVBoxLayout()
-        for childLayout in layouts:
-            if childLayout is not None:
-                layout.addLayout(childLayout)
-        layout.addStretch(1)
-        self.stack_widget.setLayout(layout)
+        self.layout = QVBoxLayout()
 
-    def add_control_bars(self, dims, listener):
-        self.control_value = {}
-        self.control_layout = {}
-        for dim in dims:
-            name = dim[0]
-            value = dim[1]
-            if value > 1:
-                control_bar = widgets.ControlBar(name)
-                control_bar.connect(listener)
-                self.control_value[name] = control_bar.value
-                self.control_layout[name] = control_bar.layout
-            else:
-                self.control_value[name] = None
-                self.control_layout[name] = None
+        for child_layout in self.child_layouts:
+            self.layout.addLayout(child_layout)
+
+        self.layout.addStretch(1)
+        self.stack_widget.setLayout(self.layout)
+
+    @property
+    def child_layouts(self):
+        yield self.selection_grid.layout
+        if 'depth' in self.control_bar:
+            yield self.control_bar['depth'].layout
+        if 'time' in self.control_bar:
+            yield self.control_bar['time'].layout
+        yield self.grid_layout
+
+    # def add_control_bars(self, dims, listener):
+    #     self.control_value = {}
+    #     self.control_layout = {}
+    #     for dim in dims:
+    #         name = dim[0]
+    #         value = dim[1]
+    #         if value > 1:
+    #             control_bar = widgets.ControlBar(name)
+    #             control_bar.connect(listener)
+    #             self.control_value[name] = control_bar.value
+    #             self.control_layout[name] = control_bar.layout
+    #         else:
+    #             self.control_value[name] = None
+    #             self.control_layout[name] = None
 
     def update_grid(self, matrix):
         for i in range(len(matrix)):
@@ -52,29 +76,21 @@ class Stack():
                 self.datagrid[(i,j)].setText(str(value))
 
     def get_selected(self):
-        selected = {}
-        for dim in self.selected.keys():
-            if self.selected[dim] != None:
-                selected['start_' + dim] = int(self.selected[dim][0].currentText())
-                selected['end_' + dim] = int(self.selected[dim][1].currentText())
-            else:
-                selected['start_' + dim] = 0
-                selected['end_' + dim] = 0
-        return selected
+        return self.selection_grid.get_selected()
 
     def update_control_value(self, dim, value):
-        if self.control_value[dim] is not None:
-            self.control_value[dim].setText(str(value))
+        if dim in self.control_bar:
+            self.control_bar[dim].value.setText(str(value))
 
     def get_control_value(self, dim):
-        return int(self.control_value[dim].text())
+        return int(self.control_bar[dim].value.text())
 
     def clear_datagrid_color(self):
         for elem in self.datagrid.values():
             elem.setStyleSheet("color: rgb(76,76,76);")
 
     def is_in_range(self, dim, start, end):
-        if self.control_value[dim] is not None:
+        if dim in self.control_bar:
             current = self.get_control_value(dim)
             return start <= current and current <= end
         else: 

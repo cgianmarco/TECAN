@@ -47,12 +47,10 @@ def selectionGrid(shape, parent, listener):
             else:
                 selection[dim] = None
 
-        print(selected)
 
         for i in range(len(lDims)):
             selectionGrid.addWidget(lDims[i], 0, i+1)
 
-        print(len(selected))
         for j in range((len(selected)/2)):
             selectionGrid.addWidget(selected[2*j], 1, j+1)
             selectionGrid.addWidget(selected[2*j+1], 2, j+1)
@@ -92,6 +90,68 @@ def Grid(width, height):
 
         return datagrid, grid
 
+class SelectionGrid():
+    def __init__(self, shape):
+        # selector
+        self.layout = QGridLayout()
+        lFrom = QLabel('Da')
+        lTo = QLabel('A')
+
+        lFrom.setFixedWidth(20)
+        lTo.setFixedWidth(20)
+
+        self.selected = []
+        lDims = []
+        self.selection = {}
+        for dim in shape.keys():
+            if shape[dim] > 1:
+                lDim = QLabel(dim.capitalize())
+                lDims.append(lDim)
+                if dim != 'depth':
+                    optionsDim = [str(x) for x in range(shape[dim])]
+                else:
+                    optionsDim = [str(x + 550) for x in range(shape[dim])]
+
+                leFromDim = QComboBox()
+                leFromDim.addItems(optionsDim)
+
+                leToDim = QComboBox()
+                leToDim.addItems(optionsDim)
+
+                self.selected.extend([leFromDim, leToDim])
+                self.selection[dim] = (leFromDim, leToDim)
+            else:
+                self.selection[dim] = None
+
+
+        for i in range(len(lDims)):
+            self.layout.addWidget(lDims[i], 0, i+1)
+
+        for j in range((len(self.selected)/2)):
+            self.layout.addWidget(self.selected[2*j], 1, j+1)
+            self.layout.addWidget(self.selected[2*j+1], 2, j+1)
+
+        self.layout.addWidget(lFrom, 1,0)
+        self.layout.addWidget(lTo, 2,0)
+
+
+    def get_selected(self):
+        selected = {}
+        for dim in self.selection.keys():
+            if self.selection[dim] != None:
+                selected['start_' + dim] = int(self.selection[dim][0].currentText())
+                selected['end_' + dim] = int(self.selection[dim][1].currentText())
+            else:
+                selected['start_' + dim] = 0
+                selected['end_' + dim] = 0
+        return selected
+
+    def connect(self, listener):
+        for combobox in self.selected:
+            combobox.activated.connect(lambda : listener.on_changed_selection(self.get_selected()))
+
+
+
 
 class ControlBar():
     def __init__(self, dim):
@@ -125,9 +185,6 @@ def newStack(layouts):
             layout.addLayout(childLayout)
         stack.setLayout(layout)
         return stack
-
-def changedStack(x):
-    print(x)
 
 def stackLayout():
     stacklist = QListWidget ()        

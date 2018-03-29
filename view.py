@@ -32,14 +32,14 @@ class Stack():
             self.control_bar['time'] = widgets.ControlBar('time')
             self.control_bar['time'].connect(listener)
 
-        self.stack_widget = QWidget()
+        self.widget = QWidget()
         self.layout = QVBoxLayout()
 
         for child_layout in self.child_layouts:
             self.layout.addLayout(child_layout)
 
         self.layout.addStretch(1)
-        self.stack_widget.setLayout(self.layout)
+        self.widget.setLayout(self.layout)
 
     @property
     def child_layouts(self):
@@ -156,7 +156,7 @@ class View(QMainWindow):
         self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
         self.stacks[new_key] = Stack(shape, self.listener)
-        self.stack_container.add_stack(new_key, self.stacks[new_key].stack_widget)
+        self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
         self.current_stack = new_key
 
     def remove_stack(self, key):

@@ -5,6 +5,12 @@ import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
+
+labels = { 'width' : 'Colonne',
+            'height' : 'Righe',
+            'depth' : 'Lunghezze d\'onda',
+            'time': 'Intervalli di tempo'}
+
 def listWidget():
         listWidget = QListWidget()
         listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
@@ -30,13 +36,13 @@ class Grid:
             newButton.setFixedWidth(20)
             self.layout.addWidget(newButton, j+1, 0)
 
-        for i in range(height):
-            for j in range(width):
+        for i in range(width):
+            for j in range(height):
                 newLineEdit = QLineEdit()
                 newLineEdit.setFixedWidth(60)
 
                 self.datagrid[(i, j)] = newLineEdit
-                self.layout.addWidget(newLineEdit, i+1, j+1)
+                self.layout.addWidget(newLineEdit, j+1, i+1)
 
         stretch = QHBoxLayout()
         stretch.addStretch(1)
@@ -53,12 +59,12 @@ class SelectionGrid():
         lFrom.setFixedWidth(20)
         lTo.setFixedWidth(20)
 
-        self.selected = []
+        selected = []
         lDims = []
         self.selection = {}
         for dim in shape.keys():
             if shape[dim] > 1:
-                lDim = QLabel(dim.capitalize())
+                lDim = QLabel(labels[dim])
                 lDims.append(lDim)
                 if dim != 'depth':
                     optionsDim = [str(x) for x in range(shape[dim])]
@@ -71,7 +77,7 @@ class SelectionGrid():
                 leToDim = QComboBox()
                 leToDim.addItems(optionsDim)
 
-                self.selected.extend([leFromDim, leToDim])
+                selected.extend([leFromDim, leToDim])
                 self.selection[dim] = (leFromDim, leToDim)
             else:
                 self.selection[dim] = None
@@ -80,9 +86,9 @@ class SelectionGrid():
         for i in range(len(lDims)):
             self.layout.addWidget(lDims[i], 0, i+1)
 
-        for j in range((len(self.selected)/2)):
-            self.layout.addWidget(self.selected[2*j], 1, j+1)
-            self.layout.addWidget(self.selected[2*j+1], 2, j+1)
+        for j in range((len(selected)/2)):
+            self.layout.addWidget(selected[2*j], 1, j+1)
+            self.layout.addWidget(selected[2*j+1], 2, j+1)
 
         self.layout.addWidget(lFrom, 1,0)
         self.layout.addWidget(lTo, 2,0)
@@ -100,7 +106,7 @@ class SelectionGrid():
         return selected
 
     def connect(self, listener):
-        for combobox in self.selected:
+        for combobox in reduce(lambda x,y: x+y if y is not None else x, self.selection.values()):
             combobox.activated.connect(lambda : listener.on_changed_selection(self.get_selected()))
 
 

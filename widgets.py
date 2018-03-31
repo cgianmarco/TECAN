@@ -50,7 +50,10 @@ class Grid:
 
 
 class SelectionGrid():
+    # This should be __init__(self, shape, axis_values)
     def __init__(self, shape):
+        # self.axis_values = axis_values
+
         # selector
         self.layout = QGridLayout()
         lFrom = QLabel('Da')
@@ -66,6 +69,7 @@ class SelectionGrid():
             if shape[dim] > 1:
                 lDim = QLabel(labels[dim])
                 lDims.append(lDim)
+                # optionsDim = axis_values[dim]
                 if dim != 'depth':
                     optionsDim = [str(x) for x in range(shape[dim])]
                 else:
@@ -100,6 +104,8 @@ class SelectionGrid():
             if self.selection[dim] != None:
                 selected['start_' + dim] = int(self.selection[dim][0].currentText())
                 selected['end_' + dim] = int(self.selection[dim][1].currentText())
+                # selected['start_' + dim] = int(self.selection[dim][0].currentIndex())
+                # selected['end_' + dim] = int(self.selection[dim][1].currentIndex())
             else:
                 selected['start_' + dim] = 0
                 selected['end_' + dim] = 0

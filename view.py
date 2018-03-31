@@ -11,6 +11,7 @@ import widgets
 # width_value to width
 
 class Stack():
+    # This should be __init__(self, shape, axis_values, listener)
     def __init__(self, shape, listener):
         self.time = shape['time']
         self.depth = shape['depth']
@@ -20,6 +21,7 @@ class Stack():
         self.grid = widgets.Grid(self.width_value, self.height_value)
 
         self.selection_grid = widgets.SelectionGrid(shape)
+        # self.selection_grid = widgets.SelectionGrid(shape, axis_values)
         self.selection_grid.connect(listener)
 
         self.control_bar = {}
@@ -152,10 +154,12 @@ class View(QMainWindow):
         self.setWindowTitle('TECAN Reader')
         self.show()
 
+    # This should be add_new_stack(self, shape, axis_values)
     def add_new_stack(self, shape):
         self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
         self.stacks[new_key] = Stack(shape, self.listener)
+        # self.stacks[new_key] = Stack(shape, axis_values, self.listener)
         self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
         self.current_stack = new_key
 

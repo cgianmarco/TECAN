@@ -1,6 +1,6 @@
 from model import Model
 from view import View
-from fileloader import FileLoader, TwoDimFileLoader
+from fileloader import *
 
 
 class Listener:
@@ -9,7 +9,9 @@ class Listener:
 
 	def on_tensor_loaded(self, event):
 		shape = event['shape']
+		# axis_values = event['axis_values']
 		self.view.add_new_stack(shape)
+		# self.view.add_new_stack(shape, axis_values)
 
 	def on_matrix_changed(self, event):
 		matrix = event['matrix']
@@ -41,8 +43,9 @@ class ViewListener():
 		self.model = model
 
 	def on_tensor_load(self, filename):
-		fileloader = FileLoader(filename)
-		# fileloader = TwoDimFileLoader(filename)
+		# fileloader = FileLoader(filename)
+		# fileloader = TwoDimFileLoader()
+		fileloader = ThreeDimFileLoader()
 		self.model.add_new_tensor(fileloader.parse())
 
 	def on_mean_action(self, selected):

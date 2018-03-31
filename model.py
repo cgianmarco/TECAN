@@ -36,8 +36,8 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth'] - self.wl_start
-		end_depth = selected['end_depth'] - self.wl_start
+		start_depth = selected['start_depth'] - self.wl_start # remove this
+		end_depth = selected['end_depth'] - self.wl_start # remove this
 		start_time = selected['start_time']
 		end_time = selected['end_time']
 		return self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
@@ -47,8 +47,8 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth'] - self.wl_start
-		end_depth = selected['end_depth'] - self.wl_start
+		start_depth = selected['start_depth'] - self.wl_start # remove this
+		end_depth = selected['end_depth'] - self.wl_start # remove this
 		start_time = selected['start_time']
 		end_time = selected['end_time']
 		self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result

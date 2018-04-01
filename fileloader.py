@@ -1,6 +1,19 @@
 from openpyxl import load_workbook
 import numpy as np
 
+def filter_empty(value):
+			if value == '':
+				return 0.0
+			else:
+				return value
+
+def get_two_dim_matrix(doc, data_starting_line):
+	result = []
+	for line in range(data_starting_line + 1, data_starting_line + 9):
+		row = list(doc[line])
+		result.append([ filter_empty(cell.value) for cell in row[1:] ])
+	return result
+
 class FileLoader:
 	def __init__(self, filename):
 		self.filename = filename
@@ -29,6 +42,13 @@ class FileLoader:
 
 			width = 8
 			height = 8
+
+			axis_values = { 'time' : range(0,time), 
+						'depth' : range(wl_start,wl_end), 
+						'width' : range(width), 
+						'height' : range(height) }
+			print(axis_values)
+
 			data = np.array(result).reshape([1, depth, width, height])
 
 		elif self.filename == '/home/gianmarco/Desktop/200 ul.xlsx':
@@ -59,7 +79,7 @@ class FileLoader:
 			width = 8
 			height = 8
 			data = np.array(result).reshape([1, depth, width, height])
-		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}
+		return {"data" : data, 'axis_values':axis_values, 'time':time, 'depth': depth, 'width': width, 'height':height}
 
 
 class TwoDimFileLoader:
@@ -75,6 +95,8 @@ class TwoDimFileLoader:
 		wl_start = 0
 		wl_end = 0
 
+		axis_values = []
+
 		depth = 1
 		time = 1
 
@@ -84,26 +106,23 @@ class TwoDimFileLoader:
 			row = list(self.doc[line])
 			result.append([ filter_empty(cell.value) for cell in row[1:] ])
 
+		
+
 		width = 12
 		height = 8
+
+		axis_values = { 'time' : range(0,time), 
+						'depth' : range(0,depth), 
+						'width' : range(width), 
+						'height' : range(height) }
+
 		data = np.array(result).T
 		data = np.expand_dims(data, axis=0)
 		data = np.expand_dims(data, axis=0)
 		print(data)
-		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}
+		return {"data" : data, 'axis_values':axis_values, 'time':time, 'depth': depth, 'width': width, 'height':height}
 
-def filter_empty(value):
-			if value == '':
-				return 0.0
-			else:
-				return value
 
-def get_two_dim_matrix(doc, data_starting_line):
-	result = []
-	for line in range(data_starting_line + 1, data_starting_line + 9):
-		row = list(doc[line])
-		result.append([ filter_empty(cell.value) for cell in row[1:] ])
-	return result
 
 
 class ThreeDimFileLoader:

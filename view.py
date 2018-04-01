@@ -12,16 +12,17 @@ import widgets
 
 class Stack():
     # This should be __init__(self, shape, axis_values, listener)
-    def __init__(self, shape, listener):
+    def __init__(self, shape, axis_values, listener):
         self.time = shape['time']
         self.depth = shape['depth']
         self.width_value = shape['width']
         self.height_value = shape['height']
+        self.axis_values = axis_values
 
         self.grid = widgets.Grid(self.width_value, self.height_value)
 
-        self.selection_grid = widgets.SelectionGrid(shape)
-        # self.selection_grid = widgets.SelectionGrid(shape, axis_values)
+        # self.selection_grid = widgets.SelectionGrid(shape)
+        self.selection_grid = widgets.SelectionGrid(shape, self.axis_values)
         self.selection_grid.connect(listener)
 
         self.control_bar = {}
@@ -63,10 +64,10 @@ class Stack():
 
     def update_control_value(self, dim, value):
         if dim in self.control_bar:
-            self.control_bar[dim].value.setText(str(value))
+            self.control_bar[dim].value.setText(str(value + self.axis_values[dim][0]))
 
     def get_control_value(self, dim):
-        return int(self.control_bar[dim].value.text())
+        return int(self.control_bar[dim].value.text()) - self.axis_values[dim][0]
 
     def clear_datagrid_color(self):
         for elem in self.grid.datagrid.values():
@@ -155,10 +156,10 @@ class View(QMainWindow):
         self.show()
 
     # This should be add_new_stack(self, shape, axis_values)
-    def add_new_stack(self, shape):
+    def add_new_stack(self, shape, axis_values):
         self.last_index += 1
         new_key = "Matrix" + str(self.last_index)
-        self.stacks[new_key] = Stack(shape, self.listener)
+        self.stacks[new_key] = Stack(shape, axis_values, self.listener)
         # self.stacks[new_key] = Stack(shape, axis_values, self.listener)
         self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
         self.current_stack = new_key

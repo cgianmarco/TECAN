@@ -9,16 +9,16 @@ class Listener:
 
 	def on_tensor_loaded(self, event):
 		shape = event['shape']
-		# axis_values = event['axis_values']
-		self.view.add_new_stack(shape)
-		# self.view.add_new_stack(shape, axis_values)
+		axis_values = event['axis_values']
+		# self.view.add_new_stack(shape)
+		self.view.add_new_stack(shape, axis_values)
 
 	def on_matrix_changed(self, event):
 		matrix = event['matrix']
-		wavelength = event['wavelength']
+		depth = event['wavelength']
 		time = event['time']
 		self.view.update_grid(matrix)
-		self.view.update_control_value('depth', wavelength)
+		self.view.update_control_value('depth', depth)
 		self.view.update_control_value('time', time)
 
 	def on_changed_current_tensor(self, event):
@@ -43,9 +43,9 @@ class ViewListener():
 		self.model = model
 
 	def on_tensor_load(self, filename):
-		# fileloader = FileLoader(filename)
+		fileloader = FileLoader(filename)
 		# fileloader = TwoDimFileLoader()
-		fileloader = ThreeDimFileLoader()
+		# fileloader = ThreeDimFileLoader()
 		self.model.add_new_tensor(fileloader.parse())
 
 	def on_mean_action(self, selected):

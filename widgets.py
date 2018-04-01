@@ -51,8 +51,8 @@ class Grid:
 
 class SelectionGrid():
     # This should be __init__(self, shape, axis_values)
-    def __init__(self, shape):
-        # self.axis_values = axis_values
+    def __init__(self, shape, axis_values):
+        self.axis_values = axis_values
 
         # selector
         self.layout = QGridLayout()
@@ -102,10 +102,10 @@ class SelectionGrid():
         selected = {}
         for dim in self.selection.keys():
             if self.selection[dim] != None:
-                selected['start_' + dim] = int(self.selection[dim][0].currentText())
-                selected['end_' + dim] = int(self.selection[dim][1].currentText())
-                # selected['start_' + dim] = int(self.selection[dim][0].currentIndex())
-                # selected['end_' + dim] = int(self.selection[dim][1].currentIndex())
+                # selected['start_' + dim] = int(self.selection[dim][0].currentText())
+                # selected['end_' + dim] = int(self.selection[dim][1].currentText())
+                selected['start_' + dim] = int(self.selection[dim][0].currentIndex())
+                selected['end_' + dim] = int(self.selection[dim][1].currentIndex())
             else:
                 selected['start_' + dim] = 0
                 selected['end_' + dim] = 0

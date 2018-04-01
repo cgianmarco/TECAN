@@ -13,8 +13,7 @@ class Tensor:
 
 	def load(self, loadedfile):
 		# Wavelengths interval
-		self.wl_start = loadedfile['wl_start']
-		self.wl_end = loadedfile['wl_end']
+		self.axis_values = loadedfile['axis_values']
 
 		self.depth = loadedfile['depth']
 		self.time = loadedfile['time']
@@ -22,7 +21,7 @@ class Tensor:
 		self.data = loadedfile['data']
 		self.width = loadedfile['width']
 		self.height = loadedfile['height']
-		self.selected = { 'start_width':0, 'end_width':0, 'start_height':0, 'end_height':0, 'start_depth':self.wl_start, 'end_depth':self.wl_start, 'start_time':0, 'end_time':0}
+		self.selected = { 'start_width':0, 'end_width':0, 'start_height':0, 'end_height':0, 'start_depth':0, 'end_depth':0, 'start_time':0, 'end_time':0}
 
 	def get_current_matrix(self):
 		return self.data[self.current_time][self.current_depth]
@@ -36,8 +35,8 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth'] - self.wl_start # remove this
-		end_depth = selected['end_depth'] - self.wl_start # remove this
+		start_depth = selected['start_depth'] # remove this
+		end_depth = selected['end_depth'] # remove this
 		start_time = selected['start_time']
 		end_time = selected['end_time']
 		return self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
@@ -47,8 +46,8 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth'] - self.wl_start # remove this
-		end_depth = selected['end_depth'] - self.wl_start # remove this
+		start_depth = selected['start_depth'] # remove this
+		end_depth = selected['end_depth'] # remove this
 		start_time = selected['start_time']
 		end_time = selected['end_time']
 		self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
@@ -60,10 +59,13 @@ class Tensor:
 		return round(self.get_selected_matrix(selected).std(), 4)
 
 	def get_current_wl(self):
-		return self.wl_start + self.current_depth
+		return self.current_depth
 
 	def get_current_time(self):
 		return self.current_time
+
+	def get_axis_values(self):
+		return self.axis_values
 
 	def update_selected(self, selected):
 		self.selected = selected
@@ -88,7 +90,7 @@ class Model(object):
 		self.tensors[new_key] = Tensor()
 		self.currentTensor = new_key
 		self.tensors[new_key].load(loadedfile)
-		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}})
+		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}, 'axis_values':self.get_current_axis_values()})
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 		
@@ -135,6 +137,9 @@ class Model(object):
 	@property
 	def height(self):
 		return self.get_current_tensor().height
+
+	def get_current_axis_values(self):
+		return self.get_current_tensor().get_axis_values()
 
 	@data.setter
 	def data(self, value):

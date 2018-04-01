@@ -133,9 +133,6 @@ class ControlBar():
         self.layout.addWidget(self.leValue, 0,2)
         self.layout.addWidget(self.bForward, 0,3)
 
-    # def on_text_changed(self, text):
-    #     listener.on_text_changed(text, self.dim, self.axis_values)
-
     def connect(self, listener):
         self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))
         self.bForward.clicked.connect(lambda : listener.on_move_forward(self.dim))

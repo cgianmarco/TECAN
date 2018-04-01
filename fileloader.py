@@ -161,6 +161,7 @@ class ThreeDimFileLoader:
 		data = np.expand_dims(data, axis=1)
 
 		time, depth, width, height = data.shape
+
 		print(data)
 		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}
 
@@ -202,5 +203,9 @@ class FourDimFileLoader:
 		data = np.expand_dims(data, axis=1)
 
 		time, depth, width, height = data.shape
+		axis_values = { 'time' : range(0,time), 
+						'depth' : range(0,depth), 
+						'width' : range(width), 
+						'height' : range(height) }
 		print(data)
 		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}

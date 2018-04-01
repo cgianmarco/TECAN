@@ -79,11 +79,11 @@ class ViewListener():
 			if self.model.current_time < self.model.time - 1:
 				self.model.change_current_time(self.model.current_time + 1)
 
-	def on_text_changed(self, text):
+	def on_text_changed(self, text, dim, axis_values):
 		try:
 			value = int(text)
-			if self.model.wl_start <= value < self.model.wl_end:
-				self.model.change_current_depth(value - self.model.wl_start)
+			if axis_values[0] <= value <= axis_values[-1]:
+				self.model.change_current_depth(value - axis_values[0])
 		except ValueError:
 			pass
 

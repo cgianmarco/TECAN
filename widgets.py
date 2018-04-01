@@ -119,8 +119,9 @@ class SelectionGrid():
 
 
 class ControlBar():
-    def __init__(self, dim):
+    def __init__(self, dim, axis_values):
         self.dim = dim
+        self.axis_values = axis_values
         self.layout = QGridLayout()
         self.bBack = QPushButton('back')
         self.bForward = QPushButton('forward')
@@ -132,10 +133,13 @@ class ControlBar():
         self.layout.addWidget(self.leValue, 0,2)
         self.layout.addWidget(self.bForward, 0,3)
 
+    # def on_text_changed(self, text):
+    #     listener.on_text_changed(text, self.dim, self.axis_values)
+
     def connect(self, listener):
         self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))
         self.bForward.clicked.connect(lambda : listener.on_move_forward(self.dim))
-        self.leValue.textChanged.connect(lambda : listener.on_text_changed(self.dim))
+        self.leValue.textChanged.connect(lambda text : listener.on_text_changed(text, self.dim, self.axis_values))
 
     @property
     def value(self):

@@ -28,11 +28,11 @@ class Stack():
         self.control_bar = {}
 
         if self.depth > 1:
-            self.control_bar['depth'] = widgets.ControlBar('depth')
+            self.control_bar['depth'] = widgets.ControlBar('depth', self.axis_values['depth'])
             self.control_bar['depth'].connect(listener)
 
         if self.time > 1:
-            self.control_bar['time'] = widgets.ControlBar('time')
+            self.control_bar['time'] = widgets.ControlBar('time', self.axis_values['time'])
             self.control_bar['time'].connect(listener)
 
         self.widget = QWidget()

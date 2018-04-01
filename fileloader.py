@@ -14,144 +14,109 @@ def get_two_dim_matrix(doc, data_starting_line):
 		result.append([ filter_empty(cell.value) for cell in row[1:] ])
 	return result
 
+def get_dims(doc, data_starting_line):
+	data_starting_line -= 1
+	width = len([cell for cell in doc[data_starting_line][1:] if 'A' in cell.value])
+	height = len(doc[data_starting_line][1:])/width
+	return width, height
+
+
+
+
+
 class FileLoader:
 	def __init__(self, filename):
 		self.filename = filename
 		self.doc = load_workbook(str(filename))
-		self.doc.guess_types = False
+		self.filetypes = [ ODSpectrum(), ODSingle(), ODTime()]
 		self.doc = self.doc['Result sheet']
-
-	def test(self):
-		pass
+		
 
 	def parse(self):
-		print(self.filename)
-		if self.filename == '/home/gianmarco/Desktop/50 ul.xlsx':
-			data_starting_line = 35
-			wl_start = int(str(self.doc['E24'].value).replace('L', ''))
-			wl_end = int(str(self.doc['E25'].value).replace('L', ''))
-
-			depth = wl_end - wl_start
-			time = 1
-
-			# Get values
-			result = []
-			for i in range(depth):
-				row = list(self.doc[data_starting_line + i])
-				result.append([ cell.value for cell in row[1:] ])
-
-			width = 8
-			height = 8
-
-			axis_values = { 'time' : range(0,time), 
-						'depth' : range(wl_start,wl_end), 
-						'width' : range(width), 
-						'height' : range(height) }
-			print(axis_values)
-
-			data = np.array(result).reshape([1, depth, width, height])
-
-		elif self.filename == '/home/gianmarco/Desktop/200 ul.xlsx':
-			data_starting_line = 35
-			wl_start = int(str(self.doc['E24'].value).replace('L', ''))
-			wl_end = int(str(self.doc['E25'].value).replace('L', ''))
-
-			depth = wl_end - wl_start
-			time = 10
-			width = 12
-			height = 8
-
-			data = np.zeros((time, depth, width, height))
-
-		else:
-			data_starting_line = 35
-			wl_start = 0
-			wl_end = 0
-
-			depth = 1
-			time = 1
-
-			# Get values
-			result = []
-			row = list(self.doc[data_starting_line])
-			result.append([ cell.value for cell in row[1:] ])
-
-			width = 8
-			height = 8
-			data = np.array(result).reshape([1, depth, width, height])
-		return {"data" : data, 'axis_values':axis_values, 'time':time, 'depth': depth, 'width': width, 'height':height}
+		for filetype in self.filetypes:
+			if filetype.test(self.doc) :
+				return filetype.parse(self.doc)
+		raise NotImplementedError('FileType not implemented')
 
 
-class TwoDimFileLoader:
-	def __init__(self):
-		filename = '/home/gianmarco/Desktop/Tirocinio/Letture TECAN/OD600/LID/50 ul.xlsx'
-		self.doc = load_workbook(str(filename))['Result sheet']
 
-	def test(self):
-		pass
+class ODSpectrum():
+	def test(self, doc):
+		return doc['A24'].value == 'Wavelength start'
 
-	def parse(self):
-		data_starting_line = 32
-		wl_start = 0
-		wl_end = 0
+	def parse(self, doc):
+		data_starting_line = 35
+		wl_start = int(str(doc['E24'].value).replace('L', ''))
+		wl_end = int(str(doc['E25'].value).replace('L', ''))
 
-		axis_values = []
-
-		depth = 1
+		depth = wl_end - wl_start + 1
+		width, height = get_dims(doc, data_starting_line)
 		time = 1
 
 		# Get values
 		result = []
-		for line in range(data_starting_line + 1, data_starting_line + 9):
-			row = list(self.doc[line])
-			result.append([ filter_empty(cell.value) for cell in row[1:] ])
+		for i in range(depth):
+			row = list(doc[data_starting_line + i])
+			result.append([ cell.value for cell in row[1:] ])
 
-		
+		data = np.transpose(np.array(result).reshape([1, depth, width, height]), (0,1,3,2))
 
+		axis_values = { 'time' : range(time), 
+						'depth' : range(wl_start,wl_end), 
+						'width' : range(width), 
+						'height' : range(height) }
+
+		return {"data" : data, 'axis_values':axis_values}
+
+
+
+class ODSingle():
+	def test(self, doc):
+		return doc['A24'].value == 'Measurement wavelength'
+
+	def parse(self, doc):
+		data_starting_line = 32
+		axis_values = []
+
+		depth = 1
+		time = 1
 		width = 12
 		height = 8
 
-		axis_values = { 'time' : range(0,time), 
-						'depth' : range(0,depth), 
+		# Get values
+		result = get_two_dim_matrix(doc, data_starting_line)
+
+	
+
+		axis_values = { 'time' : range(time), 
+						'depth' : range(depth), 
 						'width' : range(width), 
 						'height' : range(height) }
 
 		data = np.array(result).T
 		data = np.expand_dims(data, axis=0)
 		data = np.expand_dims(data, axis=0)
-		print(data)
-		return {"data" : data, 'axis_values':axis_values, 'time':time, 'depth': depth, 'width': width, 'height':height}
+
+		return {"data" : data, 'axis_values':axis_values}
 
 
 
+class ODTime:
 
-class ThreeDimFileLoader:
-	def __init__(self):
-		filename = '/home/gianmarco/Desktop/prova.xlsx'
-		self.doc = load_workbook(str(filename))['Result sheet']
+	def test(self, doc):
+		print(doc['A106'].value)
+		return doc['A106'].value == 'OD600'
 
-	def test(self):
-		pass
-
-	def parse(self):
-		data_starting_line = 32
-		wl_start = 0
-		wl_end = 0
-
-		depth = 1
-		time = 1
-
-		def filter_empty(value):
-			if value == '':
-				return 0.0
-			else:
-				return value
+	def parse(self, doc):
+		data_starting_line = 110
 
 		# Get values
 		result = []
-		line = 215
-		while self.doc[line][0].value == '<>':
-			result.append(get_two_dim_matrix(self.doc, line))
+		time_values = []
+		line = data_starting_line
+		while doc[line][0].value == '<>':
+			result.append(get_two_dim_matrix(doc, line))
+			# time_values.append(doc['B' + str(line - 3)].value)
 			line += 13
 
 
@@ -161,51 +126,17 @@ class ThreeDimFileLoader:
 		data = np.expand_dims(data, axis=1)
 
 		time, depth, width, height = data.shape
+		print(data.shape)
 
-		print(data)
-		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}
-
-
-
-class FourDimFileLoader:
-	def __init__(self):
-		filename = '/home/gianmarco/Desktop/prova.xlsx'
-		self.doc = load_workbook(str(filename))['Result sheet']
-
-	def test(self):
-		pass
-
-	def parse(self):
-		data_starting_line = 318
-		wl_start = 0
-		wl_end = 0
-
-		depth = 1
-		time = 1
-
-		def filter_empty(value):
-			if value == '':
-				return 0.0
-			else:
-				return value
-
-		# Get values
-		result = []
-		line = 110
-		while self.doc[line][0].value == '<>':
-			result.append(get_two_dim_matrix(self.doc, line))
-			line += 13
-
-
-
-		data = np.array(result)
-		data = np.transpose(data, (0,2,1))
-		data = np.expand_dims(data, axis=1)
-
-		time, depth, width, height = data.shape
-		axis_values = { 'time' : range(0,time), 
-						'depth' : range(0,depth), 
+		axis_values = { 'time' : range(time), 
+						'depth' : range(depth), 
 						'width' : range(width), 
 						'height' : range(height) }
-		print(data)
-		return {"data" : data, 'wl_start' : wl_start, 'wl_end' : wl_end, 'time':time, 'depth': depth, 'width': width, 'height':height}
+		print(axis_values)
+
+		return {"data" : data, 'axis_values':axis_values}
+
+
+
+
+	

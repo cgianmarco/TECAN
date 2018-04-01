@@ -13,14 +13,10 @@ class Tensor:
 
 	def load(self, loadedfile):
 		# Wavelengths interval
+		print(loadedfile)
 		self.axis_values = loadedfile['axis_values']
-
-		self.depth = loadedfile['depth']
-		self.time = loadedfile['time']
-
 		self.data = loadedfile['data']
-		self.width = loadedfile['width']
-		self.height = loadedfile['height']
+		self.time, self.depth, self.width, self.height = loadedfile['data'].shape
 		self.selected = { 'start_width':0, 'end_width':0, 'start_height':0, 'end_height':0, 'start_depth':0, 'end_depth':0, 'start_time':0, 'end_time':0}
 
 	def get_current_matrix(self):
@@ -188,6 +184,19 @@ class Model(object):
 
 	def change_current_depth(self, value):
 		self.get_current_tensor().change_current_depth(value)
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
+
+	def change_current_time(self, value):
+		self.get_current_tensor().change_current_time(value)
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
+
+	def change_current_dim(self, dim, value):
+		if dim == 'depth':
+			self.get_current_tensor().change_current_depth(value)
+		elif dim == 'time':
+			self.get_current_tensor().change_current_time(value)
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 

@@ -82,8 +82,8 @@ class ViewListener():
 	def on_text_changed(self, text, dim, axis_values):
 		try:
 			value = int(text)
-			if axis_values[0] <= value <= axis_values[-1]:
-				self.model.change_current_depth(value - axis_values[0])
+			if axis_values[0] <= value <= axis_values[:1]:
+				self.model.change_current_dim(dim, value - axis_values[0])
 		except ValueError:
 			pass
 

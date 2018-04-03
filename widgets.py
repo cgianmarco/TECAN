@@ -6,10 +6,10 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 
-labels = { 'width' : 'Colonne',
-            'height' : 'Righe',
-            'depth' : 'Lunghezze d\'onda',
-            'time': 'Intervalli di tempo'}
+labels = { 'width' : 'Columns',
+            'height' : 'Rows',
+            'depth' : 'Wavelengths',
+            'time': 'Time intervals'}
 
 def listWidget():
         listWidget = QListWidget()
@@ -56,11 +56,11 @@ class SelectionGrid():
 
         # selector
         self.layout = QGridLayout()
-        lFrom = QLabel('Da')
-        lTo = QLabel('A')
+        lFrom = QLabel('From')
+        lTo = QLabel('To')
 
-        lFrom.setFixedWidth(20)
-        lTo.setFixedWidth(20)
+        lFrom.setFixedWidth(40)
+        lTo.setFixedWidth(40)
 
         selected = []
         lDims = []
@@ -123,8 +123,8 @@ class ControlBar():
         self.dim = dim
         self.axis_values = axis_values
         self.layout = QGridLayout()
-        self.bBack = QPushButton('back')
-        self.bForward = QPushButton('forward')
+        self.bBack = QPushButton('<')
+        self.bForward = QPushButton('>')
         self.leValue = QLineEdit()
 
         self.leValue.setFixedWidth(50)

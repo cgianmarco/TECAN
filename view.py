@@ -47,10 +47,12 @@ class Stack():
     @property
     def child_layouts(self):
         yield self.selection_grid.layout
+        Hlayout = QHBoxLayout()
         if 'depth' in self.control_bar:
-            yield self.control_bar['depth'].layout
+            Hlayout.addLayout(self.control_bar['depth'].layout)
         if 'time' in self.control_bar:
-            yield self.control_bar['time'].layout
+            Hlayout.addLayout(self.control_bar['time'].layout)
+        yield Hlayout
         yield self.grid.layout
 
     def update_grid(self, matrix):
@@ -116,15 +118,22 @@ class View(QMainWindow):
     def init_menu_bar(self):
     	# menubar
         bar = self.menuBar()
+
+        # File
         file = bar.addMenu("File")
         file.triggered[QAction].connect(self.process_trigger)
 
-        # actions
-        file.addAction("Load Matrix")
-        file.addAction("Mean")
-        file.addAction("Standard deviation")
-    
-        subtract = file.addMenu("Subtract")
+        file.addAction("Load Tensor")
+        file.addAction("Export Matrix")
+
+        # Operations
+        operations = bar.addMenu("Operations")
+        operations.triggered[QAction].connect(self.process_trigger)
+
+        operations.addAction("Mean")
+        operations.addAction("Standard deviation")
+
+        subtract = operations.addMenu("Subtract")
         subtract.addAction("Value from Selected")
 
       
@@ -158,7 +167,7 @@ class View(QMainWindow):
     # This should be add_new_stack(self, shape, axis_values)
     def add_new_stack(self, shape, axis_values):
         self.last_index += 1
-        new_key = "Matrix" + str(self.last_index)
+        new_key = "Tensor" + str(self.last_index)
         self.stacks[new_key] = Stack(shape, axis_values, self.listener)
         # self.stacks[new_key] = Stack(shape, axis_values, self.listener)
         self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
@@ -171,7 +180,7 @@ class View(QMainWindow):
 
     def set_stack_index(self, i):
         self.stack_container.stacks_widget.setCurrentIndex(i)
-        self.current_stack = "Matrix" + str(i)
+        self.current_stack = "Tensor" + str(i)
 
     def update_values_list(self, values):
         self.listValue.clear()
@@ -186,8 +195,10 @@ class View(QMainWindow):
         return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
 
     def process_trigger(self, q):
-        if q.text() == 'Load Matrix':
+        if q.text() == 'Load Tensor':
             self.listener.on_tensor_load(self.get_file_name())
+        elif q.text() == 'Export Matrix':
+            self.listener.on_export_current_matrix()
         elif q.text() == 'Mean':
             self.listener.on_mean_action(self.get_selected())
         elif q.text() == 'Value from Selected':

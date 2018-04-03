@@ -1,6 +1,7 @@
 from model import Model
 from view import View
 from fileloader import *
+from filesaver import *
 
 
 class Listener:
@@ -92,7 +93,11 @@ class ViewListener():
 		self.model.update_selected(selected)
 
 	def on_changed_stack(self, i):
-		self.model.change_current_tensor("Matrix" + str(i))
+		self.model.change_current_tensor("Tensor" + str(i))
+
+	def on_export_current_matrix(self):
+		exporter = Exporter()
+		exporter.export_two_dim_matrix(self.model.get_current_matrix(), self.model.currentTensor)
 
 
 

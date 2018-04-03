@@ -82,7 +82,7 @@ class Model(object):
 
 	def add_new_tensor(self, loadedfile):
 		self.last_index += 1
-		new_key = "Matrix" + str(self.last_index)
+		new_key = "Tensor" + str(self.last_index)
 		self.tensors[new_key] = Tensor()
 		self.currentTensor = new_key
 		self.tensors[new_key].load(loadedfile)
@@ -207,7 +207,7 @@ class Model(object):
 
 	def change_current_tensor(self, value):
 		self.currentTensor = value
-		i = int(value.replace("Matrix", ""))
+		i = int(value.replace("Tensor", ""))
 		self.listener.on_changed_current_tensor({"i":i})
 
 	def get_selected_matrix(self, selected):

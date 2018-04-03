@@ -28,15 +28,19 @@ class FileLoader:
 	def __init__(self, filename):
 		self.filename = filename
 		self.doc = load_workbook(str(filename))
-		self.filetypes = [ ODSpectrum(), ODSingle(), ODTime()]
+		self.filetypes = [ ODSpectrum(), ODSingle(), ODTime(), ODTimeSpectrum()]
 		self.doc = self.doc['Result sheet']
 		
 
 	def parse(self):
+		parsed = []
 		for filetype in self.filetypes:
 			if filetype.test(self.doc) :
-				return filetype.parse(self.doc)
-		raise NotImplementedError('FileType not implemented')
+				parsed.append(filetype.parse(self.doc))
+		if len(parsed) > 0:
+			return parsed
+		else:
+			raise NotImplementedError('FileType not implemented')
 
 
 
@@ -135,6 +139,40 @@ class ODTime:
 		print(axis_values)
 
 		return {"data" : data, 'axis_values':axis_values}
+
+
+class ODTimeSpectrum:
+
+	def test(self, doc):
+		return doc['A316'].value == 'Spettro Eccitazione'
+
+	def parse(self, doc):
+		data_starting_line = 321
+
+		# Get values
+		result = []
+		time_values = []
+		line = data_starting_line
+		while doc[line][0].value == '400':	
+			result.append([[cell.value for cell in doc[row][1:] if cell.value is not None] for row in range(line, line + 21)])
+			line += 26
+			print(line)
+
+
+		data = np.array(result)
+		newshape = (8, 12, data.shape[1], data.shape[2])
+		data = data.reshape(newshape)
+		data = np.transpose(data, (3,2,1,0))
+
+		time, depth, width, height = data.shape
+
+		axis_values = { 'time' : range(time), 
+						'depth' : range(depth), 
+						'width' : range(width), 
+						'height' : range(height) }
+
+		return {"data" : data, 'axis_values':axis_values}
+
 
 
 

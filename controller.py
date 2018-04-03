@@ -46,7 +46,8 @@ class ViewListener():
 		fileloader = FileLoader(filename)
 		# fileloader = TwoDimFileLoader()
 		# fileloader = ThreeDimFileLoader()
-		self.model.add_new_tensor(fileloader.parse())
+		for tensor in fileloader.parse():
+			self.model.add_new_tensor(tensor)
 
 	def on_mean_action(self, selected):
 		mean = self.model.get_mean(selected)

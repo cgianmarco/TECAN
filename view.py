@@ -52,6 +52,7 @@ class Stack():
             Hlayout.addLayout(self.control_bar['depth'].layout)
         if 'time' in self.control_bar:
             Hlayout.addLayout(self.control_bar['time'].layout)
+        Hlayout.addStretch(1)
         yield Hlayout
         yield self.grid.layout
 

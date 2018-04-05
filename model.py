@@ -49,10 +49,10 @@ class Tensor:
 		self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
 
 	def get_mean(self, selected):
-		return round(self.get_selected_matrix(selected).mean(), 4)
+		return round(np.nanmean(self.get_selected_matrix(selected)), 4)
 
 	def get_std(self, selected):
-		return round(self.get_selected_matrix(selected).std(), 4)
+		return round(np.nanstd(self.get_selected_matrix(selected)), 4)
 
 	def get_current_wl(self):
 		return self.current_depth

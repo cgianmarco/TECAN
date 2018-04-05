@@ -55,7 +55,7 @@ class SelectionGrid():
         self.axis_values = axis_values
 
         # selector
-        self.layout = QGridLayout()
+        Hlayout = QGridLayout()
         lFrom = QLabel('From')
         lTo = QLabel('To')
 
@@ -76,9 +76,11 @@ class SelectionGrid():
                     optionsDim = [str(x + 550) for x in range(shape[dim])]
 
                 leFromDim = QComboBox()
+                leFromDim.setFixedWidth(90)
                 leFromDim.addItems(optionsDim)
 
                 leToDim = QComboBox()
+                leToDim.setFixedWidth(90)
                 leToDim.addItems(optionsDim)
 
                 selected.extend([leFromDim, leToDim])
@@ -88,14 +90,17 @@ class SelectionGrid():
 
 
         for i in range(len(lDims)):
-            self.layout.addWidget(lDims[i], 0, i+1)
+            Hlayout.addWidget(lDims[i], 0, i+1)
 
         for j in range((len(selected)/2)):
-            self.layout.addWidget(selected[2*j], 1, j+1)
-            self.layout.addWidget(selected[2*j+1], 2, j+1)
+            Hlayout.addWidget(selected[2*j], 1, j+1)
+            Hlayout.addWidget(selected[2*j+1], 2, j+1)
 
-        self.layout.addWidget(lFrom, 1,0)
-        self.layout.addWidget(lTo, 2,0)
+        Hlayout.addWidget(lFrom, 1,0)
+        Hlayout.addWidget(lTo, 2,0)
+        self.layout = QHBoxLayout()
+        self.layout.addLayout(Hlayout)
+        self.layout.addStretch(1)
 
 
     def get_selected(self):
@@ -122,16 +127,21 @@ class ControlBar():
     def __init__(self, dim, axis_values):
         self.dim = dim
         self.axis_values = axis_values
-        self.layout = QGridLayout()
+        grid_layout = QGridLayout()
+
         self.bBack = QPushButton('<')
         self.bForward = QPushButton('>')
         self.leValue = QLineEdit()
 
         self.leValue.setFixedWidth(50)
+        self.bBack.setFixedWidth(50)
+        self.bForward.setFixedWidth(50)
 
-        self.layout.addWidget(self.bBack, 0,1)
-        self.layout.addWidget(self.leValue, 0,2)
-        self.layout.addWidget(self.bForward, 0,3)
+        grid_layout.addWidget(QLabel(labels[dim]), 0,0, 1,0)
+        grid_layout.addWidget(self.bBack, 1,0)
+        grid_layout.addWidget(self.leValue, 1,1)
+        grid_layout.addWidget(self.bForward, 1,2)        
+        self.layout = grid_layout
 
     def connect(self, listener):
         self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))

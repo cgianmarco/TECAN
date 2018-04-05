@@ -154,7 +154,7 @@ class ODTimeSpectrum:
 		time_values = []
 		line = data_starting_line
 		while doc[line][0].value == '400':	
-			result.append([[cell.value for cell in doc[row][1:] if cell.value is not None] for row in range(line, line + 21)])
+			result.append([[cell.value for cell in doc[row][1:] if cell.value is not None ] for row in range(line, line + 21)])
 			line += 26
 			print(line)
 
@@ -165,6 +165,15 @@ class ODTimeSpectrum:
 		data = np.transpose(data, (3,2,1,0))
 
 		time, depth, width, height = data.shape
+
+		for t in range(time):
+			for z in range(depth):
+				for i in range(width):
+					for j in range(height):
+						if data[t,z,i,j] == 'OVER':
+							data[t,z,i,j] = np.nan
+
+		data = data.astype('float32')
 
 		axis_values = { 'time' : range(time), 
 						'depth' : range(depth), 

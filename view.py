@@ -6,13 +6,11 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import widgets
 
-# TODO
-# def generate_layouts(self.shape, self.actions)
-# width_value to width
 
 class Stack():
     # This should be __init__(self, shape, axis_values, listener)
-    def __init__(self, shape, axis_values, listener):
+    def __init__(self, name, shape, axis_values, listener):
+        self.name = name
         self.time = shape['time']
         self.depth = shape['depth']
         self.width_value = shape['width']
@@ -142,8 +140,8 @@ class View(QMainWindow):
         # main layout
         vlayout = QVBoxLayout()
 
-        self.stacks = {}
-        self.current_stack = ""
+        self.stacks = []
+        self.current_stack = -1
         self.last_index = -1
         
 
@@ -166,22 +164,33 @@ class View(QMainWindow):
         self.show()
 
     # This should be add_new_stack(self, shape, axis_values)
-    def add_new_stack(self, shape, axis_values):
-        self.last_index += 1
-        new_key = "Tensor" + str(self.last_index)
-        self.stacks[new_key] = Stack(shape, axis_values, self.listener)
-        # self.stacks[new_key] = Stack(shape, axis_values, self.listener)
-        self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
-        self.current_stack = new_key
+    # def add_new_stack(self, shape, axis_values):
+    #     self.last_index += 1
+    #     new_key = "Tensor" + str(self.last_index)
+    #     self.stacks[new_key] = Stack(shape, axis_values, self.listener)
+    #     # self.stacks[new_key] = Stack(shape, axis_values, self.listener)
+    #     self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
+    #     self.current_stack = new_key
 
-    def remove_stack(self, key):
-        del self.stacks[key]
-        self.stack_container.stacks_widget.removeWidget(self.values_widget.widget(0))
-        self.stack_container.list_widget.takeItem(0)
+    def add_new_stack(self, name, shape, axis_values):
+        new_stack = Stack(name, shape, axis_values, self.listener)
+        self.stacks.append(new_stack)
+        self.stack_container.add_stack(name, new_stack.widget)
+        self.current_stack = self.stacks.index(new_stack)
 
-    def set_stack_index(self, i):
-        self.stack_container.stacks_widget.setCurrentIndex(i)
-        self.current_stack = "Tensor" + str(i)
+    # def remove_stack(self, index):
+        # del self.stacks[index]
+        # self.stack_container.stacks_widget.removeWidget(self.values_widget.widget(index))
+        # self.stack_container.list_widget.takeItem(index)
+
+    # def set_stack_index(self, i):
+    #     self.stack_container.stacks_widget.setCurrentIndex(i)
+    #     self.current_stack = "Tensor" + str(i)
+    
+    def set_stack_index(self, index):
+        self.current_stack = index
+        self.stack_container.stacks_widget.setCurrentIndex(index)
+
 
     def update_values_list(self, values):
         self.listValue.clear()

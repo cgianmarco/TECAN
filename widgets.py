@@ -107,8 +107,6 @@ class SelectionGrid():
         selected = {}
         for dim in self.selection.keys():
             if self.selection[dim] != None:
-                # selected['start_' + dim] = int(self.selection[dim][0].currentText())
-                # selected['end_' + dim] = int(self.selection[dim][1].currentText())
                 selected['start_' + dim] = int(self.selection[dim][0].currentIndex())
                 selected['end_' + dim] = int(self.selection[dim][1].currentIndex())
             else:

@@ -2,6 +2,7 @@ from model import Model
 from view import View
 from fileloader import *
 from filesaver import *
+import os
 
 
 class Listener:
@@ -9,10 +10,11 @@ class Listener:
 		self.view = view
 
 	def on_tensor_loaded(self, event):
+		name = event['name']
 		shape = event['shape']
 		axis_values = event['axis_values']
 		# self.view.add_new_stack(shape)
-		self.view.add_new_stack(shape, axis_values)
+		self.view.add_new_stack(name, shape, axis_values)
 
 	def on_matrix_changed(self, event):
 		matrix = event['matrix']
@@ -45,10 +47,12 @@ class ViewListener():
 
 	def on_tensor_load(self, filename):
 		fileloader = FileLoader(filename)
+		filename = str(filename)
+		tensor_name = os.path.split(filename)[1].replace(os.path.splitext(filename)[1], "")
 		# fileloader = TwoDimFileLoader()
 		# fileloader = ThreeDimFileLoader()
 		for tensor in fileloader.parse():
-			self.model.add_new_tensor(tensor)
+			self.model.add_new_tensor(tensor_name, tensor)
 
 	def on_mean_action(self, selected):
 		mean = self.model.get_mean(selected)
@@ -93,7 +97,7 @@ class ViewListener():
 		self.model.update_selected(selected)
 
 	def on_changed_stack(self, i):
-		self.model.change_current_tensor("Tensor" + str(i))
+		self.model.change_current_tensor(i)
 
 	def on_export_current_matrix(self):
 		exporter = Exporter()

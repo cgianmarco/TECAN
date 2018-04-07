@@ -1,9 +1,10 @@
 import numpy as np
 
 class Tensor:
-	def __init__(self, ):
+	def __init__(self, name):
 		self.current_depth = 0
 		self.current_time = 0
+		self.name = name
 
 	def change_current_depth(self, value):
 		self.current_depth = value
@@ -35,7 +36,7 @@ class Tensor:
 		end_depth = selected['end_depth'] # remove this
 		start_time = selected['start_time']
 		end_time = selected['end_time']
-		return self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
+		return self.data[start_time:end_time+1, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
 
 	def update_selected_matrix(self, result, selected):
 		start_row = selected['start_width']
@@ -46,7 +47,7 @@ class Tensor:
 		end_depth = selected['end_depth'] # remove this
 		start_time = selected['start_time']
 		end_time = selected['end_time']
-		self.data[self.current_time, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
+		self.data[start_time:end_time+1, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
 
 	def get_mean(self, selected):
 		return round(np.nanmean(self.get_selected_matrix(selected)), 4)
@@ -69,9 +70,8 @@ class Tensor:
 
 class Model(object):
 	def __init__(self, listener):
-		tensor = Tensor()
-		self.tensors = {}
-		self.currentTensor = ""
+		self.tensors = []
+		self.currentTensor = -1
 		self.values = []
 		self.last_index = -1
 		self.listener = listener
@@ -80,13 +80,13 @@ class Model(object):
 		self.values.append(value)
 		self.listener.on_values_list_changed({'values':self.values})
 
-	def add_new_tensor(self, loadedfile):
-		self.last_index += 1
-		new_key = "Tensor" + str(self.last_index)
-		self.tensors[new_key] = Tensor()
-		self.currentTensor = new_key
-		self.tensors[new_key].load(loadedfile)
-		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}, 'axis_values':self.get_current_axis_values()})
+	def add_new_tensor(self, name, loadedfile):
+		new_tensor = Tensor(name)
+		new_tensor.load(loadedfile)
+		self.tensors.append(new_tensor)
+		self.currentTensor = self.tensors.index(new_tensor)
+		# self.tensors[new_key].load(loadedfile)
+		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}, 'axis_values':self.get_current_axis_values(), 'name':name})
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 		
@@ -207,8 +207,7 @@ class Model(object):
 
 	def change_current_tensor(self, value):
 		self.currentTensor = value
-		i = int(value.replace("Tensor", ""))
-		self.listener.on_changed_current_tensor({"i":i})
+		self.listener.on_changed_current_tensor({"i":value})
 
 	def get_selected_matrix(self, selected):
 		return self.get_current_tensor().get_selected_matrix(selected)

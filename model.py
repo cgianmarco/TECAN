@@ -52,6 +52,12 @@ class Tensor:
 	def get_mean(self, selected):
 		return round(np.nanmean(self.get_selected_matrix(selected)), 4)
 
+	def get_mean_reduction(self, selected):
+		result = np.nanmean(self.get_selected_matrix(selected), axis=(0,2,3))
+		result = np.round(result, 4)
+		result = result.reshape((1, len(result),1,1))
+		return result
+
 	def get_std(self, selected):
 		return round(np.nanstd(self.get_selected_matrix(selected)), 4)
 
@@ -220,6 +226,9 @@ class Model(object):
 	def get_mean(self, selected):
 		return self.get_current_tensor().get_mean(selected)
 
+	def get_mean_reduction(self, selected):
+		return self.wrap_tensor(self.get_current_tensor().get_mean_reduction(selected))
+
 	def get_std(self, selected):
 		return self.get_current_tensor().get_std(selected)
 
@@ -229,5 +238,15 @@ class Model(object):
 	def update_selected(self, selected):
 		self.get_current_tensor().update_selected(selected)
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
+
+	def wrap_tensor(self, tensor):
+		wrapped = {}
+		wrapped['data'] = tensor
+		time, depth, width, height = tensor.shape
+		wrapped['axis_values'] = { 'time' : range(time), 
+						'depth' : range(depth), 
+						'width' : range(width), 
+						'height' : range(height) }
+		return wrapped
 
 	

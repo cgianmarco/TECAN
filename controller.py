@@ -58,6 +58,11 @@ class ViewListener():
 		mean = self.model.get_mean(selected)
 		self.model.add_value("Mean: " +  str(mean))
 
+	def on_mean_reduction_action(self, selected):
+		mean = self.model.get_mean_reduction(selected)
+		print(mean)
+		self.model.add_new_tensor('Result', mean)
+
 	def on_std_action(self, selected):
 		std = self.model.get_std(selected)
 		self.model.add_value("Std: " +  str(std))

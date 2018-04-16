@@ -73,6 +73,32 @@ class ODSpectrum():
 		return {"data" : data, 'axis_values':axis_values}
 
 
+class Vector():
+	def test(self, doc):
+		return True
+
+	def parse(self, doc):
+		axis_values = []
+
+		depth = 1
+		time = 1
+		width = 1
+		height = 10
+
+		# Get values
+		data = np.ones((time, depth, width, height))
+
+	
+
+		axis_values = { 'time' : range(time), 
+						'depth' : range(depth), 
+						'width' : range(width), 
+						'height' : range(height) }
+
+
+		return {"data" : data, 'axis_values':axis_values}
+
+
 
 class ODSingle():
 	def test(self, doc):

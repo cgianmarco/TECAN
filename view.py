@@ -130,6 +130,7 @@ class View(QMainWindow):
         operations.triggered[QAction].connect(self.process_trigger)
 
         operations.addAction("Mean")
+        operations.addAction("Mean Reduction")
         operations.addAction("Standard deviation")
 
         subtract = operations.addMenu("Subtract")
@@ -211,6 +212,8 @@ class View(QMainWindow):
             self.listener.on_export_current_matrix()
         elif q.text() == 'Mean':
             self.listener.on_mean_action(self.get_selected())
+        elif q.text() == 'Mean Reduction':
+            self.listener.on_mean_reduction_action(self.get_selected())
         elif q.text() == 'Value from Selected':
             self.listener.on_subtract_action(self.get_selected(), self.get_list_selected())
         elif q.text() == 'Standard deviation':
@@ -237,7 +240,7 @@ class View(QMainWindow):
     def update_datagrid_color(self, selected):
         self.stack.update_datagrid_color(selected)
 
-    
+
 
 
 

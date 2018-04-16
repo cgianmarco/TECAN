@@ -237,5 +237,8 @@ class View(QMainWindow):
     def update_datagrid_color(self, selected):
         self.stack.update_datagrid_color(selected)
 
+    
+
+
 
 

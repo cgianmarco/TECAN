@@ -149,12 +149,20 @@ class ControlBar():
     @property
     def value(self):
         return self.leValue
+ 
 
 
 
-class StackContainer():
-    def __init__(self):
-        self.list_widget = QListWidget ()        
+
+
+
+
+class StackContainer(QObject):
+    def __init__(self, *args, **kwargs):
+        super(QObject, self).__init__(*args, **kwargs)
+        self.list_widget = QListWidget()    
+        self.list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.list_widget.connect(self.list_widget,SIGNAL("customContextMenuRequested(QPoint)" ), self.open_right_click_menu)    
         self.stacks_widget = QStackedWidget()
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.list_widget)
@@ -163,3 +171,18 @@ class StackContainer():
     def add_stack(self, key, stack_widget):
         self.stacks_widget.addWidget(stack_widget)
         self.list_widget.addItem(key)
+
+    def open_right_click_menu(self, QPos): 
+        self.listMenu = QMenu()
+
+        # Menu items
+        quit_item = self.listMenu.addAction("Remove Item")
+        self.connect(quit_item, SIGNAL("triggered()"), self.quit_item_clicked) 
+
+        parentPosition = self.list_widget.mapToGlobal(QPoint(0, 0))        
+        self.listMenu.move(parentPosition + QPos)
+        self.listMenu.show() 
+
+    def quit_item_clicked(self):
+        currentItemName = str(self.list_widget.currentItem().text() )
+        print(currentItemName)

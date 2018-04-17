@@ -92,7 +92,7 @@ class Model(object):
 		self.tensors.append(new_tensor)
 		self.currentTensor = self.tensors.index(new_tensor)
 		# self.tensors[new_key].load(loadedfile)
-		self.listener.on_tensor_loaded({'shape':{"width":self.width, "height":self.height, "depth":self.depth, "time":self.time}, 'axis_values':self.get_current_axis_values(), 'name':name})
+		self.listener.on_tensor_loaded({'shape':{"width":new_tensor.width, "height":new_tensor.height, "depth":new_tensor.depth, "time":new_tensor.time}, 'axis_values':new_tensor.get_axis_values(), 'name':name})
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 		
@@ -104,17 +104,6 @@ class Model(object):
 	############################################
 	# Interface with current Tensor properties
 	############################################
-	@property
-	def data(self):
-		return self.get_current_tensor().data
-
-	@property
-	def wl_start(self):
-		return self.get_current_tensor().wl_start
-
-	@property
-	def wl_end(self):
-		return self.get_current_tensor().wl_end
 
 	@property
 	def depth(self):
@@ -128,48 +117,10 @@ class Model(object):
 	def current_depth(self):
 		return self.get_current_tensor().current_depth
 
+	# This
 	@property
 	def current_time(self):
 		return self.get_current_tensor().current_time
-
-	@property
-	def width(self):
-		return self.get_current_tensor().width
-
-	@property
-	def height(self):
-		return self.get_current_tensor().height
-
-	def get_current_axis_values(self):
-		return self.get_current_tensor().get_axis_values()
-
-	@data.setter
-	def data(self, value):
-		self.get_current_tensor().data = value
-
-	@wl_start.setter
-	def wl_start(self, value):
-		self.get_current_tensor().wl_start = value
-
-	@wl_end.setter
-	def wl_end(self, value):
-		self.get_current_tensor().wl_end = value
-
-	@depth.setter
-	def depth(self, value):
-		self.get_current_tensor().depth = value
-
-	@current_depth.setter
-	def current_depth(self, value):
-		self.get_current_tensor().current_depth = value
-
-	@width.setter
-	def width(self, value):
-		self.get_current_tensor().width = value
-
-	@height.setter
-	def height(self, value):
-		self.get_current_tensor().height = value
 
 	############################################
 	# Interface with current Tensor methods
@@ -181,6 +132,7 @@ class Model(object):
 	def get_current_wl(self):
 		return self.get_current_tensor().get_current_wl()
 
+	# This
 	def get_current_time(self):
 		return self.get_current_tensor().get_current_time()
 

@@ -69,6 +69,15 @@ class Tensor:
 	def update_selected(self, selected):
 		self.selected = selected
 
+	def dim_exists(self, dim, step):
+		if dim == 'depth':
+			if self.current_state[dim] + step < self.depth and self.current_state[dim] + step >= 0:
+				return True
+		if dim == 'time':
+			if self.current_state[dim] + step < self.time and self.current_state[dim] + step >= 0:
+				return True
+		return False
+
 
 class Model(object):
 	def __init__(self, listener):
@@ -136,12 +145,8 @@ class Model(object):
 
 
 	def add_value_to_dim(self, dim, value):
-		if dim == 'depth':
-			if self.current_depth + value < self.depth and self.current_depth + value >= 0:
-				self.get_current_tensor().change_current_depth(self.current_depth + value)
-		if dim == 'time':
-			if self.current_time + value < self.time and self.current_time + value >= 0:
-				self.get_current_tensor().change_current_time(self.current_time + value)
+		if self.get_current_tensor().dim_exists(dim, value):
+			self.change_current_dim(dim, self.get_current_tensor().current_state[dim] + value)
 		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.current_depth, "time":self.current_time})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 

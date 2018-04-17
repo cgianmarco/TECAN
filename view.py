@@ -164,14 +164,6 @@ class View(QMainWindow):
         self.setWindowTitle('TECAN Reader')
         self.show()
 
-    # This should be add_new_stack(self, shape, axis_values)
-    # def add_new_stack(self, shape, axis_values):
-    #     self.last_index += 1
-    #     new_key = "Tensor" + str(self.last_index)
-    #     self.stacks[new_key] = Stack(shape, axis_values, self.listener)
-    #     # self.stacks[new_key] = Stack(shape, axis_values, self.listener)
-    #     self.stack_container.add_stack(new_key, self.stacks[new_key].widget)
-    #     self.current_stack = new_key
 
     def add_new_stack(self, name, shape, axis_values):
         new_stack = Stack(name, shape, axis_values, self.listener)
@@ -183,10 +175,6 @@ class View(QMainWindow):
         # del self.stacks[index]
         # self.stack_container.stacks_widget.removeWidget(self.values_widget.widget(index))
         # self.stack_container.list_widget.takeItem(index)
-
-    # def set_stack_index(self, i):
-    #     self.stack_container.stacks_widget.setCurrentIndex(i)
-    #     self.current_stack = "Tensor" + str(i)
     
     def set_stack_index(self, index):
         self.current_stack = index

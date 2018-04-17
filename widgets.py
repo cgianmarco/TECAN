@@ -124,10 +124,6 @@ class SelectionGrid():
             combobox.activated.connect(lambda : listener.on_changed_selection(self.get_selected()))
 
 
-        # for combobox in reduce(lambda x,y: x+y if y is not None else x, self.selection.values()):
-        #     combobox.activated.connect(lambda : listener.on_changed_selection(self.get_selected()))
-
-
 
 
 class ControlBar():

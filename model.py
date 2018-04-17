@@ -32,8 +32,8 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth'] # remove this
-		end_depth = selected['end_depth'] # remove this
+		start_depth = selected['start_depth'] 
+		end_depth = selected['end_depth'] 
 		start_time = selected['start_time']
 		end_time = selected['end_time']
 		return self.data[start_time:end_time+1, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1]
@@ -43,8 +43,8 @@ class Tensor:
 		end_row = selected['end_width']
 		start_column = selected['start_height']
 		end_column = selected['end_height']
-		start_depth = selected['start_depth'] # remove this
-		end_depth = selected['end_depth'] # remove this
+		start_depth = selected['start_depth'] 
+		end_depth = selected['end_depth'] 
 		start_time = selected['start_time']
 		end_time = selected['end_time']
 		self.data[start_time:end_time+1, start_depth:end_depth+1, start_row:end_row+1, start_column:end_column+1] = result
@@ -60,12 +60,6 @@ class Tensor:
 
 	def get_std(self, selected):
 		return round(np.nanstd(self.get_selected_matrix(selected)), 4)
-
-	def get_current_wl(self):
-		return self.current_depth
-
-	def get_current_time(self):
-		return self.current_time
 
 	def get_axis_values(self):
 		return self.axis_values
@@ -93,7 +87,7 @@ class Model(object):
 		self.currentTensor = self.tensors.index(new_tensor)
 		# self.tensors[new_key].load(loadedfile)
 		self.listener.on_tensor_loaded({'shape':{"width":new_tensor.width, "height":new_tensor.height, "depth":new_tensor.depth, "time":new_tensor.time}, 'axis_values':new_tensor.get_axis_values(), 'name':name})
-		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.current_depth, "time":self.current_time})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 		
 
@@ -129,39 +123,29 @@ class Model(object):
 	def get_current_tensor(self):
 		return self.tensors[self.currentTensor]
 
-	def get_current_wl(self):
-		return self.get_current_tensor().get_current_wl()
-
-	# This
-	def get_current_time(self):
-		return self.get_current_tensor().get_current_time()
-
 	def get_current_matrix(self):
 		return self.get_current_tensor().get_current_matrix()
 
-
-	def change_current_depth(self, value):
-		self.get_current_tensor().change_current_depth(value)
-		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
-		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
-
-	def change_current_time(self, value):
-		self.get_current_tensor().change_current_time(value)
-		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
-		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 
 	def change_current_dim(self, dim, value):
 		if dim == 'depth':
 			self.get_current_tensor().change_current_depth(value)
 		elif dim == 'time':
 			self.get_current_tensor().change_current_time(value)
-		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.current_depth, "time":self.current_time})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 
-	def change_current_time(self, value):
-		self.get_current_tensor().change_current_time(value)
-		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+
+	def add_value_to_dim(self, dim, value):
+		if dim == 'depth':
+			if self.current_depth + value < self.depth and self.current_depth + value >= 0:
+				self.get_current_tensor().change_current_depth(self.current_depth + value)
+		if dim == 'time':
+			if self.current_time + value < self.time and self.current_time + value >= 0:
+				self.get_current_tensor().change_current_time(self.current_time + value)
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.current_depth, "time":self.current_time})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
+
 
 	def change_current_tensor(self, value):
 		self.currentTensor = value
@@ -172,7 +156,7 @@ class Model(object):
 
 	def update_selected_matrix(self, result, selected):
 		self.get_current_tensor().update_selected_matrix(result, selected)
-		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.get_current_wl(), "time":self.get_current_time()})
+		self.listener.on_matrix_changed({"matrix":self.get_current_matrix(), "wavelength":self.current_depth, "time":self.current_time})
 		self.listener.on_selected_changed(self.get_current_tensor().get_selected())
 
 	def get_mean(self, selected):

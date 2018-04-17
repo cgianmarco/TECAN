@@ -74,21 +74,10 @@ class ViewListener():
 		self.model.update_selected_matrix(result, selected)
 
 	def on_move_back(self, dim):
-		if dim == 'depth':
-			if self.model.current_depth > 0:
-				self.model.change_current_depth(self.model.current_depth - 1)
-		if dim == 'time':
-			if self.model.current_time > 0:
-				self.model.change_current_time(self.model.current_time - 1)
+		self.model.add_value_to_dim(dim, -1)
 
 	def on_move_forward(self, dim):
-		
-		if dim == 'depth':
-			if self.model.current_depth < self.model.depth - 1:
-				self.model.change_current_depth(self.model.current_depth + 1)
-		if dim == 'time':
-			if self.model.current_time < self.model.time - 1:
-				self.model.change_current_time(self.model.current_time + 1)
+		self.model.add_value_to_dim(dim, 1)
 
 	def on_text_changed(self, text, dim, axis_values):
 		try:

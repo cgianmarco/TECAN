@@ -23,13 +23,18 @@ def listWidget():
 class Grid:
     def __init__(self, width, height):
         self.datagrid = {}
-        self.layout = QHBoxLayout()
+        self.layout = QVBoxLayout()
         self.layout.setSpacing(0)
 
-        stretch = QVBoxLayout()
+        stretch = QHBoxLayout()
+        stretch.setAlignment(Qt.AlignLeft)
 
         table = QTableWidget()
-        table.setGeometry(0, 0, 300, 600)
+        table.setMinimumHeight(30*height + 10)
+        table.setMinimumWidth(80*width + 10)
+
+        table.setMaximumHeight(30*height + 10)
+        table.setMaximumWidth(80*width + 10)
         table.setRowCount(width)
         table.setColumnCount(height)
 
@@ -53,8 +58,8 @@ class Grid:
                 self.datagrid[(i, j)] = newitem
         stretch.addWidget(table)
 
-        # table.resizeColumnsToContents()
-        # table.resizeRowsToContents()
+        table.resizeColumnsToContents()
+        table.resizeRowsToContents()
 
         
         # stretch.addStretch(1)

@@ -13,6 +13,7 @@ labels = { 'width' : 'Columns',
 
 def listWidget():
         listWidget = QListWidget()
+        listWidget.setMaximumHeight(100)
         listWidget.setSelectionMode(QAbstractItemView.ExtendedSelection)
         listWidget.resize(300,120)
 
@@ -22,31 +23,42 @@ def listWidget():
 class Grid:
     def __init__(self, width, height):
         self.datagrid = {}
-        self.layout = QGridLayout()
+        self.layout = QHBoxLayout()
         self.layout.setSpacing(0)
 
-        for i in range(width):
-            newButton = QLabel(str(i))
-            newButton.setAlignment(Qt.AlignHCenter)
-            newButton.setFixedWidth(60)
-            self.layout.addWidget(newButton, 0, i+1)
+        stretch = QVBoxLayout()
 
-        for j in range(height):
-            newButton = QLabel(str(j))
-            newButton.setFixedWidth(20)
-            self.layout.addWidget(newButton, j+1, 0)
+        table = QTableWidget()
+        table.setGeometry(0, 0, 300, 600)
+        table.setRowCount(width)
+        table.setColumnCount(height)
+
+
+        # for i in range(width):
+        #     newButton = QLabel(str(i))
+        #     newButton.setAlignment(Qt.AlignHCenter)
+        #     newButton.setFixedWidth(60)
+        #     self.layout.addWidget(newButton, 0, i+1)
+
+        # for j in range(height):
+        #     newButton = QLabel(str(j))
+        #     newButton.setFixedWidth(20)
+        #     self.layout.addWidget(newButton, j+1, 0)
 
         for i in range(width):
             for j in range(height):
-                newLineEdit = QLineEdit()
-                newLineEdit.setFixedWidth(60)
+                newitem = QTableWidgetItem()
+                table.setItem(j, i, newitem)
+                # newitem.setFixedWidth(60)
+                self.datagrid[(i, j)] = newitem
+        stretch.addWidget(table)
 
-                self.datagrid[(i, j)] = newLineEdit
-                self.layout.addWidget(newLineEdit, j+1, i+1)
+        # table.resizeColumnsToContents()
+        # table.resizeRowsToContents()
 
-        stretch = QHBoxLayout()
-        stretch.addStretch(1)
-        self.layout.addLayout(stretch, 0, height + 2)
+        
+        # stretch.addStretch(1)
+        self.layout.addLayout(stretch)
 
 
 class SelectionGrid():
@@ -165,7 +177,8 @@ class ControlBar():
 class StackContainer(QObject):
     def __init__(self, *args, **kwargs):
         super(QObject, self).__init__(*args, **kwargs)
-        self.list_widget = QListWidget()    
+        self.list_widget = QListWidget() 
+        self.list_widget.setMaximumWidth(200)   
         self.list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.list_widget.connect(self.list_widget,SIGNAL("customContextMenuRequested(QPoint)" ), self.open_right_click_menu)    
         self.stacks_widget = QStackedWidget()

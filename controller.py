@@ -1,6 +1,7 @@
 from model import Model
 from view import View
 from fileloader import *
+from extractor import FileParser
 from filesaver import *
 import os
 
@@ -46,13 +47,11 @@ class ViewListener():
 		self.model = model
 
 	def on_tensor_load(self, filename):
-		fileloader = FileLoader(filename)
-		filename = str(filename)
-		tensor_name = os.path.split(filename)[1].replace(os.path.splitext(filename)[1], "")
-		# fileloader = TwoDimFileLoader()
-		# fileloader = ThreeDimFileLoader()
-		for tensor in fileloader.parse():
-			self.model.add_new_tensor(tensor_name, tensor)
+		fileparser = FileParser(str(filename))
+		
+		names, tensors = fileparser.tensors()
+		for name, tensor in zip(names, tensors):
+			self.model.add_new_tensor(name, tensor)
 
 	def on_mean_action(self, selected):
 		mean = self.model.get_mean(selected)

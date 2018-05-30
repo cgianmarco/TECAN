@@ -6,6 +6,9 @@ filename = "/home/gianmarco/Desktop/File Tecan/Growth_Lux/LAB 3.2 - Growth_Lux_1
 OD_SINGLE = "/home/gianmarco/Desktop/Tirocinio/Letture TECAN/OD600/LID/50 ul.xlsx"
 OD_SPECTRUM = "/home/gianmarco/Desktop/Tirocinio/Letture TECAN/Spettro OD550-650/LID/50 ul.xlsx"
 MULTIPLE = "/home/gianmarco/Desktop/File Tecan/Growth_Lux/LAB 3.2 - Growth_Lux_13 h_20170628_155630.xlsx"
+OD_TIME = "/home/gianmarco/Desktop/Excel Tecan/prova.xlsx"
+OD_TIME_SPECTRUM = OD_TIME
+OD_TIMESPECTRUM_TEMPLATE_TEST = "/home/gianmarco/Desktop/Book2.xlsx"
 
 class Document:
 	def __init__(self, worksheet):
@@ -45,6 +48,18 @@ class Document:
 			row = list(self.doc[line])
 			result.append([ self.filter_empty(cell.value) for cell in row[1:] ])
 		return result
+
+	def get_two_dim_time_spectrum_matrix(self, data_starting_line):
+		result = []
+		line = data_starting_line
+		while self.doc['A' + str(line)].value is not None:
+			print(line)
+			if str(self.doc['A' + str(line)].value.encode('utf-8')).isdigit():
+				result.append([cell.value for cell in self.doc[line][1:]])
+			line += 1
+		return result
+
+
 
 	def row_of(self, cell):
 		return int(filter(lambda x: x.isdigit(), cell))
@@ -135,14 +150,27 @@ class FileParser:
 		# Extract tensors
 		tensors = []
 
-		filetypes = [ODSingle(), ODSpectrum()]
+		filetypes = [ODSingle(), ODSpectrum(), ODTime(), ODTimeSpectrum()]
 		for doc in split_docs:
 			for filetype in filetypes:
 				if filetype.test(doc):
 					tensors.append(filetype.parse(doc))
 
+		if len(names) > len(tensors):
+			names = names[:len(tensors)]
+
+		print(names)
+
 		return names, tensors
 
 
-fp = FileParser(OD_SPECTRUM)
-print(fp.tensors())
+# fp = FileParser(OD_TIME)
+# print(fp.tensors())
+
+
+def test():
+	doc = Document(load_workbook(OD_TIMESPECTRUM_TEMPLATE_TEST).active)
+
+	print(doc.get_two_dim_time_spectrum_matrix(1))
+
+# test()

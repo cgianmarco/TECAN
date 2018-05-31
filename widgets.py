@@ -61,9 +61,16 @@ class Grid:
         table.resizeColumnsToContents()
         table.resizeRowsToContents()
 
-        
         # stretch.addStretch(1)
         self.layout.addLayout(stretch)
+
+    def update(self, matrix):
+        for i in range(len(matrix)):
+            for j in range(len(matrix[0])):
+                self.datagrid[(i, j)].setText(str(matrix[i,j]))
+
+        
+        
 
 
 class SelectionGrid():

@@ -48,6 +48,12 @@ class Grid:
         stretch.addStretch(1)
         self.layout.addLayout(stretch, 0, height + 2)
 
+    def update(self, matrix):
+        for i in range(len(matrix)):
+            for j in range(len(matrix[i])):
+                value = matrix[i][j]
+                self.datagrid[(i,j)].setText(str(value))
+
 
 class SelectionGrid():
     # This should be __init__(self, shape, axis_values)

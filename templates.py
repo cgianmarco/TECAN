@@ -93,7 +93,14 @@ class ODTime:
 		data = np.expand_dims(data, axis=1)
 
 		time, depth, width, height = data.shape
-		print(data.shape)
+		for t in range(time):
+			for z in range(depth):
+				for i in range(width):
+					for j in range(height):
+						if data[t,z,i,j] == 'OVER':
+							data[t,z,i,j] = np.nan
+
+		data = data.astype('float32')
 
 		axis_values = { 'time' : range(time), 
 						'depth' : range(depth), 

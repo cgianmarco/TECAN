@@ -60,7 +60,10 @@ class ODSpectrum:
 		wl_end = int(doc.doc['A' + str(line - 1)].value)
 		depth = wl_end - wl_start + 1
 
-		data = np.transpose(np.array(result).reshape([1, depth, width, height]), (0,1,3,2))
+		result = np.array(result)
+		data = np.transpose(result.reshape([1, depth, width, height]), (0,1,3,2))
+
+
 
 		axis_values = { 'time' : range(time), 
 						'depth' : range(wl_start,wl_end), 

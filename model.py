@@ -16,7 +16,7 @@ class Tensor:
 
 	def load(self, loadedfile):
 		# Wavelengths interval
-		print(loadedfile)
+		print(loadedfile)	
 		self.axis_values = loadedfile['axis_values']
 		self.data = loadedfile['data']
 		self.time, self.depth, self.width, self.height = loadedfile['data'].shape

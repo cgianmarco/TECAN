@@ -62,7 +62,7 @@ class Document:
 
 
 	def row_of(self, cell):
-		return int(filter(lambda x: x.isdigit(), cell))
+		return int(''.join(list(filter(lambda x: x.isdigit(), cell))))
 
 	def cell_of_value(self, value):
 		line = 1

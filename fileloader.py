@@ -15,10 +15,23 @@ def get_two_dim_matrix(doc, data_starting_line):
 	return result
 
 def get_dims(doc, data_starting_line):
-	data_starting_line -= 1
 	width = len([cell for cell in doc[data_starting_line][1:] if 'A' in cell.value])
 	height = len(doc[data_starting_line][1:])/width
 	return width, height
+
+def cell_of_value(value, doc):
+		line = 1
+		label = 'A' + str(line)
+		max_row = doc.max_row
+
+		for line in range(1, max_row):
+			if doc[label].value == value:
+				return label
+			label = label.replace(str(line), str(line+1))
+			line += 1
+
+def row_of(cell):
+		return int(filter(lambda x: x.isdigit(), cell))
 
 
 
@@ -49,7 +62,7 @@ class ODSpectrum():
 		return doc['A24'].value == 'Wavelength start'
 
 	def parse(self, doc):
-		data_starting_line = 35
+		data_starting_line = row_of(cell_of_value('Wavel.', doc))
 		wl_start = int(str(doc['E24'].value).replace('L', ''))
 		wl_end = int(str(doc['E25'].value).replace('L', ''))
 
@@ -60,7 +73,7 @@ class ODSpectrum():
 		# Get values
 		result = []
 		for i in range(depth):
-			row = list(doc[data_starting_line + i])
+			row = list(doc[data_starting_line + 1 + i])
 			result.append([ cell.value for cell in row[1:] ])
 
 		data = np.transpose(np.array(result).reshape([1, depth, width, height]), (0,1,3,2))
@@ -105,7 +118,7 @@ class ODSingle():
 		return doc['A24'].value == 'Measurement wavelength'
 
 	def parse(self, doc):
-		data_starting_line = 32
+		data_starting_line = row_of(cell_of_value('<>', doc))
 		axis_values = []
 
 		depth = 1
@@ -138,15 +151,14 @@ class ODTime:
 		return doc['A106'].value == 'OD600'
 
 	def parse(self, doc):
-		data_starting_line = 110
 
 		# Get values
 		result = []
 		time_values = []
-		line = data_starting_line
+		matrix = cell_of_values('<>')
+		line = row_of(next(matrix))
 		while doc[line][0].value == '<>':
 			result.append(get_two_dim_matrix(doc, line))
-			# time_values.append(doc['B' + str(line - 3)].value)
 			line += 13
 
 

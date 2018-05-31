@@ -55,10 +55,7 @@ class Stack():
         yield self.grid.layout
 
     def update_grid(self, matrix):
-        for i in range(len(matrix)):
-            for j in range(len(matrix[i])):
-                value = matrix[i][j]
-                self.grid.datagrid[(i,j)].setText(str(value))
+        self.grid.update(matrix)
 
     def get_selected(self):
         return self.selection_grid.get_selected()
@@ -154,12 +151,12 @@ class View(QMainWindow):
 
         # Add Child Layouts
         vlayout.addLayout(self.stack_container.layout)
-    	vlayout.addWidget(self.listValue)
+        vlayout.addWidget(self.listValue)
 
 
-    	mainWidget = QWidget()
-    	mainWidget.setLayout(vlayout)
-    	self.setCentralWidget(mainWidget)        
+        mainWidget = QWidget()
+        mainWidget.setLayout(vlayout)
+        self.setCentralWidget(mainWidget)        
         self.move(300, 150)
         self.setWindowTitle('TECAN Reader')
         self.show()

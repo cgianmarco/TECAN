@@ -4,6 +4,7 @@
 import sys
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from navbar import Ui_NavBar
 
 
 labels = { 'width' : 'Columns',
@@ -29,17 +30,20 @@ class Grid:
             newButton = QLabel(str(i))
             newButton.setAlignment(Qt.AlignHCenter)
             newButton.setFixedWidth(60)
+            newButton.setStyleSheet("font-weight:bold; margin-top:20px; margin-bottom:5px;")
             self.layout.addWidget(newButton, 0, i+1)
 
         for j in range(height):
             newButton = QLabel(str(j))
             newButton.setFixedWidth(20)
+            newButton.setStyleSheet("font-weight:bold;")
             self.layout.addWidget(newButton, j+1, 0)
 
         for i in range(width):
             for j in range(height):
                 newLineEdit = QLineEdit()
                 newLineEdit.setFixedWidth(60)
+                newLineEdit.setFixedHeight(35)
 
                 self.datagrid[(i, j)] = newLineEdit
                 self.layout.addWidget(newLineEdit, j+1, i+1)
@@ -68,12 +72,16 @@ class SelectionGrid():
         lFrom.setFixedWidth(40)
         lTo.setFixedWidth(40)
 
+        lFrom.setStyleSheet("font-weight:bold;")
+        lTo.setStyleSheet("font-weight:bold;")
+
         selected = []
         lDims = []
         self.selection = {}
         for dim in shape.keys():
             if shape[dim] > 1:
                 lDim = QLabel(labels[dim])
+                lDim.setStyleSheet("font-weight:bold;")
                 lDims.append(lDim)
                 # optionsDim = axis_values[dim]
                 if dim != 'depth':
@@ -142,11 +150,19 @@ class ControlBar():
         self.bForward = QPushButton('>')
         self.leValue = QLineEdit()
 
-        self.leValue.setFixedWidth(50)
-        self.bBack.setFixedWidth(50)
-        self.bForward.setFixedWidth(50)
+        self.leValue.setFixedWidth(60)
+        self.bBack.setFixedWidth(31)
+        self.bForward.setFixedWidth(31)
 
-        grid_layout.addWidget(QLabel(labels[dim]), 0,0, 1,0)
+        self.bBack.setFixedHeight(31)
+        self.bForward.setFixedHeight(31)
+
+
+        self.lDim = QLabel(labels[dim])
+        self.lDim.setStyleSheet("font-weight:bold; margin-top:20px;")
+
+
+        grid_layout.addWidget(self.lDim, 0,0, 1,0)
         grid_layout.addWidget(self.bBack, 1,0)
         grid_layout.addWidget(self.leValue, 1,1)
         grid_layout.addWidget(self.bForward, 1,2)        
@@ -160,6 +176,25 @@ class ControlBar():
     @property
     def value(self):
         return self.leValue
+
+
+# class ControlBar(Ui_NavBar):
+#     def __init__(self, dim, axis_values):
+#         self.setupUi(self)
+#         self.dim = dim
+#         self.axis_values = axis_values
+      
+#         self.layout = self.horizontalLayout
+
+#     def connect(self, listener):
+#         self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))
+#         self.bForward.clicked.connect(lambda : listener.on_move_forward(self.dim))
+#         self.leValue.textChanged.connect(lambda text : listener.on_text_changed(text, self.dim, self.axis_values))
+
+#     @property
+#     def value(self):
+#         return self.leValue
+
  
 
 

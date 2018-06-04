@@ -3,9 +3,11 @@ from openpyxl import load_workbook, Workbook
 import os
 
 class ODSingle:
+	# Test if document belongs to template
 	def test(self, doc):
 		return len(doc.cells_of_value('<>')) == 1
 
+	# Parse data from document
 	def parse(self, doc):
 		data_starting_line = doc.row_of(doc.cell_of_value('<>'))
 		axis_values = []

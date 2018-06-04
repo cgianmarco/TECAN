@@ -107,6 +107,12 @@ class Controller:
 		self.view = View(viewListener)
 		self.model = Model(Listener(self.view))
 		viewListener.add_model(self.model)
+
+	def load_tensor(self, filename):
+		self.view.listener.on_tensor_load(filename)
+
+	def show(self):
+		self.view.show()
 		
 
 

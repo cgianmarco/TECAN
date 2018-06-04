@@ -84,7 +84,8 @@ class Document:
 
 class FileParser:
 	def __init__(self, filename):
-		self. wb = load_workbook(str(filename))
+		filename = filename
+		self.wb = load_workbook(str(filename))
 		self.doc = self.wb['Result sheet']
 		self.document = Document(self.doc)
 

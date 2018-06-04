@@ -69,7 +69,7 @@ class Stack():
 
     def clear_datagrid_color(self):
         for elem in self.grid.datagrid.values():
-            elem.setStyleSheet("color: rgb(76,76,76);")
+            elem.setStyleSheet("border-style:solid; border-color:#aaa; border-width: 1px;color: rgb(76,76,76);")
 
     def is_in_range(self, dim, start, end):
         if dim in self.control_bar:
@@ -91,7 +91,7 @@ class Stack():
         if start_row <= end_row and start_column <= end_column and self.is_in_range('depth', start_depth, end_depth) and self.is_in_range('time', start_time, end_time):
             for i in range(start_row, end_row+1):
                 for j in range(start_column, end_column+1):
-                    self.grid.datagrid[(i,j)].setStyleSheet("color: rgb(255, 0, 255);")
+                    self.grid.datagrid[(i,j)].setStyleSheet("border-style:solid; border-color:#aaa; border-width: 1px;color: rgb(255, 0, 255);")
 
 
 def DEFAULT_ACTION(*args, **kwargs):
@@ -159,7 +159,6 @@ class View(QMainWindow):
         self.setCentralWidget(mainWidget)        
         self.move(300, 150)
         self.setWindowTitle('TECAN Reader')
-        self.show()
 
 
     def add_new_stack(self, name, shape, axis_values):
@@ -188,7 +187,8 @@ class View(QMainWindow):
         return self.stacks[self.current_stack]
 
     def get_file_name(self):
-        return QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
+        filename = QFileDialog.getOpenFileName(self, 'Open file', "Excel files (*.xlsx)")
+        return filename
 
     def process_trigger(self, q):
         if q.text() == 'Load Tensor':

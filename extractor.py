@@ -53,7 +53,7 @@ class Document:
 		result = []
 		line = data_starting_line
 		while self.doc['A' + str(line)].value is not None:
-			print(line)
+			# print(line)
 			if str(self.doc['A' + str(line)].value.encode('utf-8')).isdigit():
 				result.append([cell.value for cell in self.doc[line][1:]])
 			line += 1

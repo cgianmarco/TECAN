@@ -20,37 +20,40 @@ def listWidget():
         return listWidget
 
 
-class Grid:
-    def __init__(self, width, height):
+class Grid(QWidget):
+    def __init__(self, width, height, parent=None):
+        super(QWidget, self).__init__(parent)
         self.datagrid = {}
-        self.layout = QGridLayout()
-        self.layout.setSpacing(0)
+        layout = QGridLayout()
+        layout.setSpacing(0)
 
         for i in range(width):
             newButton = QLabel(str(i))
             newButton.setAlignment(Qt.AlignHCenter)
             newButton.setFixedWidth(60)
             newButton.setStyleSheet("font-weight:bold; margin-top:20px; margin-bottom:5px;")
-            self.layout.addWidget(newButton, 0, i+1)
+            layout.addWidget(newButton, 0, i+1)
 
         for j in range(height):
             newButton = QLabel(str(j))
             newButton.setFixedWidth(20)
             newButton.setStyleSheet("font-weight:bold;")
-            self.layout.addWidget(newButton, j+1, 0)
+            layout.addWidget(newButton, j+1, 0)
 
         for i in range(width):
             for j in range(height):
                 newLineEdit = QLineEdit()
                 newLineEdit.setFixedWidth(60)
                 newLineEdit.setFixedHeight(35)
+                newLineEdit.setStyleSheet("border-style:solid; border-color:#aaa; border-width: 1px;")
 
                 self.datagrid[(i, j)] = newLineEdit
-                self.layout.addWidget(newLineEdit, j+1, i+1)
+                layout.addWidget(newLineEdit, j+1, i+1)
 
         stretch = QHBoxLayout()
         stretch.addStretch(1)
-        self.layout.addLayout(stretch, 0, height + 2)
+        layout.addLayout(stretch, 0, height + 2)
+        self.setLayout(layout)
 
     def update(self, matrix):
         for i in range(len(matrix)):
@@ -58,10 +61,29 @@ class Grid:
                 value = matrix[i][j]
                 self.datagrid[(i,j)].setText(str(value))
 
+    def clear_color(self):
+        for elem in self.datagrid.values():
+            stylesheet = elem.styleSheet() + "color:#000;"
+            elem.setStyleSheet(stylesheet)
 
-class SelectionGrid():
+    def update_color(self, start_row, end_row, start_col, end_col):
+        for i in range(start_row, end_row+1):
+                for j in range(start_col, end_col+1):
+                    stylesheet = self.datagrid[(i,j)].styleSheet() + "color: rgb(255, 0, 255);"
+                    self.datagrid[(i,j)].setStyleSheet(stylesheet)
+
+    def update_background_color(self, start_row, end_row, start_col, end_col):
+        color = QColorDialog.getColor()
+        for i in range(start_row, end_row+1):
+                for j in range(start_col, end_col+1):
+                    stylesheet = self.datagrid[(i,j)].styleSheet() + "background-color:" + color.name() + ";"
+                    self.datagrid[(i,j)].setStyleSheet(stylesheet)
+
+
+class SelectionGrid(QWidget):
     # This should be __init__(self, shape, axis_values)
-    def __init__(self, shape, axis_values):
+    def __init__(self, shape, axis_values, parent=None):
+        super(QWidget, self).__init__(parent)
         self.axis_values = axis_values
 
         # selector
@@ -112,9 +134,10 @@ class SelectionGrid():
 
         Hlayout.addWidget(lFrom, 1,0)
         Hlayout.addWidget(lTo, 2,0)
-        self.layout = QHBoxLayout()
-        self.layout.addLayout(Hlayout)
-        self.layout.addStretch(1)
+        layout = QHBoxLayout()
+        layout.addLayout(Hlayout)
+        layout.addStretch(1)
+        self.setLayout(layout)
 
 
     def get_selected(self):
@@ -140,11 +163,13 @@ class SelectionGrid():
 
 
 
-class ControlBar():
-    def __init__(self, dim, axis_values):
+class ControlBar(QWidget):
+    def __init__(self, dim, axis_values, parent=None):
+        super(QWidget, self).__init__(parent)
+
         self.dim = dim
         self.axis_values = axis_values
-        grid_layout = QGridLayout()
+        layout = QGridLayout()
 
         self.bBack = QPushButton('<')
         self.bForward = QPushButton('>')
@@ -162,11 +187,11 @@ class ControlBar():
         self.lDim.setStyleSheet("font-weight:bold; margin-top:20px;")
 
 
-        grid_layout.addWidget(self.lDim, 0,0, 1,0)
-        grid_layout.addWidget(self.bBack, 1,0)
-        grid_layout.addWidget(self.leValue, 1,1)
-        grid_layout.addWidget(self.bForward, 1,2)        
-        self.layout = grid_layout
+        layout.addWidget(self.lDim, 0,0, 1,0)
+        layout.addWidget(self.bBack, 1,0)
+        layout.addWidget(self.leValue, 1,1)
+        layout.addWidget(self.bForward, 1,2)        
+        self.setLayout(layout)
 
     def connect(self, listener):
         self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))
@@ -178,34 +203,13 @@ class ControlBar():
         return self.leValue
 
 
-# class ControlBar(Ui_NavBar):
-#     def __init__(self, dim, axis_values):
-#         self.setupUi(self)
-#         self.dim = dim
-#         self.axis_values = axis_values
-      
-#         self.layout = self.horizontalLayout
-
-#     def connect(self, listener):
-#         self.bBack.clicked.connect(lambda : listener.on_move_back(self.dim))
-#         self.bForward.clicked.connect(lambda : listener.on_move_forward(self.dim))
-#         self.leValue.textChanged.connect(lambda text : listener.on_text_changed(text, self.dim, self.axis_values))
-
-#     @property
-#     def value(self):
-#         return self.leValue
-
- 
 
 
 
 
-
-
-
-class StackContainer(QObject):
-    def __init__(self, *args, **kwargs):
-        super(QObject, self).__init__(*args, **kwargs)
+class StackContainer(QWidget):
+    def __init__(self, parent = None):
+        super(QWidget, self).__init__(parent)
         self.list_widget = QListWidget()    
         self.list_widget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.list_widget.connect(self.list_widget,SIGNAL("customContextMenuRequested(QPoint)" ), self.open_right_click_menu)    
@@ -213,6 +217,7 @@ class StackContainer(QObject):
         self.layout = QHBoxLayout()
         self.layout.addWidget(self.list_widget)
         self.layout.addWidget(self.stacks_widget)
+        self.setLayout(self.layout)
 
     def add_stack(self, key, stack_widget):
         self.stacks_widget.addWidget(stack_widget)

@@ -4,6 +4,9 @@ from fileloader import *
 from extractor import FileParser
 from filesaver import *
 import os
+import logger
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 
 
 class Listener:
@@ -34,6 +37,7 @@ class Listener:
 		self.view.update_values_list(values)
 
 	def on_selected_changed(self, event):
+		logger.log("SELECTED" + str(event))
 		self.view.clear_datagrid_color()
 		selected = event
 		self.view.update_datagrid_color(selected)
@@ -42,6 +46,9 @@ class Listener:
 class ViewListener():
 	def __init__(self):
 		self.model = None
+		self.inputs = []
+		self.recorded_ops = []
+		self.recording = False
 
 	def add_model(self, model):
 		self.model = model
@@ -53,7 +60,14 @@ class ViewListener():
 		for name, tensor in zip(names, tensors):
 			self.model.add_new_tensor(name, tensor)
 
-	def on_mean_action(self, selected):
+	def record_op(self, op, inputs):
+		self.recorded_ops.append(op)
+		self.inputs.append(inputs)
+
+	def on_mean_action(self, selected, value=None):
+		if self.recording == True:
+			self.record_op(self.on_mean_action, selected)
+		logger.log("MEAN -> M1")
 		mean = self.model.get_mean(selected)
 		self.model.add_value("Mean: " +  str(mean))
 
@@ -62,15 +76,32 @@ class ViewListener():
 		print(mean)
 		self.model.add_new_tensor('Result', mean)
 
-	def on_std_action(self, selected):
+	def on_std_action(self, selected, value=None):
+		if self.recording == True:
+			self.record_op(self.on_mean_action, selected)
 		std = self.model.get_std(selected)
 		self.model.add_value("Std: " +  str(std))
 
 	def on_subtract_action(self, selected, value):
+		logger.log("SUBTRACT M1")
 		v1 = self.model.get_selected_matrix(selected)
 		v2 = value
 		result = self.model.subtract(v1, v2)
 		self.model.update_selected_matrix(result, selected)
+
+	def on_start_recording_action(self):
+		self.recording = True
+
+	def on_end_recording_action(self):
+		self.recording = False
+
+	def on_custom_operation_action(self, selected):
+		for operation, arg in zip(self.recorded_ops, self.inputs):
+			arg['start_time'] = selected['start_time']
+			arg['end_time'] = selected['end_time']
+			arg['start_depth'] = selected['start_depth']
+			arg['end_depth'] = selected['end_depth']
+			operation(arg)
 
 	def on_move_back(self, dim):
 		self.model.add_value_to_dim(dim, -1)
@@ -92,9 +123,9 @@ class ViewListener():
 	def on_changed_stack(self, i):
 		self.model.change_current_tensor(i)
 
-	def on_export_current_matrix(self):
+	def on_export_current_matrix(self, selected):
 		exporter = Exporter()
-		exporter.export_two_dim_matrix(self.model.get_current_matrix(), self.model.currentTensor)
+		exporter.export_up_to_three_dim_tensor(self.model.get_current_tensor().name, self.model.get_selected_matrix(selected))
 
 
 

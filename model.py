@@ -173,7 +173,7 @@ class Model(object):
 		return self.get_current_tensor().get_std(selected)
 
 	def subtract(self, x, y):
-		return x - y
+		return np.round(x - y, 4)
 
 	def update_selected(self, selected):
 		self.get_current_tensor().update_selected(selected)
